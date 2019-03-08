@@ -17,40 +17,32 @@ User Cases Table
 Priority 
 User
 Description
-P0
-As a player
-I want to create an account that can save my player information, past tournament standings and seedings.
-P1
-As a tournament organizer
-I want to be able to create a bracket while easily looking at the entrants’ information to take into consideration 
-P2
-As a tournament organizer
-I want to start a new tournament
-P3
-As a player
-I want to be able to sign up for a tournament/look for tournaments to sign up for
-P4
-As a player
-I want to be able to see when and where I play next
-P5
-As a player
-I want to get a notification on when it’s my turn to play
-P6
-As a player
-I want to enter in and confirm the match score after I am done
-P7
-As a tournament organizer
-I want to be able to look at tournament results as the tournament goes on and verify any issues that may come up
+* P0 As a player
+    * I want to create an account that can save my player information, past tournament standings and seedings.
+* P1 As a tournament organizer
+    * I want to be able to create a bracket while easily looking at the entrants’ information to take into consideration 
+* P2 As a tournament organizer
+    * I want to start a new tournament
+* P3 As a player
+    * I want to be able to sign up for a tournament/look for tournaments to sign up for
+* P4 As a player
+    * I want to be able to see when and where I play next
+* P5 As a player
+    * I want to get a notification on when it’s my turn to play
+* P6 As a player
+    * I want to enter in and confirm the match score after I am done
+* P7 As a tournament organizer
+    * I want to be able to look at tournament results as the tournament goes on and verify any issues that may come up
  
 For each of your user story, describe in 2-3 sentences what your technical implementation strategy is. Explicitly note in bold which technology you are using (if applicable):
 Include a list available endpoints your application will provide and what is the purpose it serves. Ex. GET /driver/{id}
 Include any database schemas as appendix
 User Cases Implementation
-P0: Submit post request to /smashgg/users. This adds a record to the users table in the overall tournaments database that contains information about the player. The information can be retrieved with a get request to the same url.
-P1: Gather all players entered into tournament from the singular tournament database with a get request to /{tournament}/players and insert into a data structure to track bracket and standing. This insert function will also add the relevant information to the games and pools tables in the singular database table.
-P2: Submit a post request to /smashgg/tournaments to create a new tournament. This will create a new singular tournament database dedicated to that tournament and add creator and other tournament organizers to TO table. 
-P3: Submit a get request to /smashgg/tournaments to see all available tournaments. Once sign up is verified, a post request is submitted with user id as a query param to {tournament}/players.
-P4: Submit a get request to {tournament}/standings to see overall bracket standings, and include a query param to see individual player standing and progress. The get request will retrieve data from the data structure used to hold standings. This request will also retrieve data from the players table joined with the pools table and games table in the singular tournament database.
-P5: *Not exactly sure how this is handled. Separate push notification service? Handler that tracks player, game time, and current real time?
-P6: Submit a post request to {tournament}/standings with a query param with player id to update player standings. This request will update pools, games, and players tables in the singular tournament database and update the data structure used to hold standings information
-P7:  Submit a get request to {tournament}/standings to see overall bracket standings, and include a query param to see individual player standings, pool progress, and game progress. Submit a patch request to the same overall with appropriate query param to verify or solve any issues.
+* P0: Submit post request to /smashgg/users. This adds a record to the users table in the overall tournaments database that contains information about the player. The information can be retrieved with a get request to the same url.
+* P1: Gather all players entered into tournament from the singular tournament database with a get request to /{tournament}/players and insert into a data structure to track bracket and standing. This insert function will also add the relevant information to the games and pools tables in the singular database table.
+* P2: Submit a post request to /smashgg/tournaments to create a new tournament. This will create a new singular tournament database dedicated to that tournament and add creator and other tournament organizers to TO table. 
+* P3: Submit a get request to /smashgg/tournaments to see all available tournaments. Once sign up is verified, a post request is submitted with user id as a query param to {tournament}/players.
+* P4: Submit a get request to {tournament}/standings to see overall bracket standings, and include a query param to see individual player standing and progress. The get request will retrieve data from the data structure used to hold standings. This request will also retrieve data from the players table joined with the pools table and games table in the singular tournament database.
+* P5: *Not exactly sure how this is handled. Separate push notification service? Handler that tracks player, game time, and current real time?
+* P6: Submit a post request to {tournament}/standings with a query param with player id to update player standings. This request will update pools, games, and players tables in the singular tournament database and update the data structure used to hold standings information
+* P7:  Submit a get request to {tournament}/standings to see overall bracket standings, and include a query param to see individual player standings, pool progress, and game progress. Submit a patch request to the same overall with appropriate query param to verify or solve any issues.

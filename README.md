@@ -12,7 +12,7 @@ Our group honestly just loves the Super Smash Bros series. From the early compet
  
 Technical Description
 Architectural Diagram
-![architectural diagram](./architecture-diagram.png)
+![architectural diagram](./architecture.png)
 User Cases Table
 Priority 
 User

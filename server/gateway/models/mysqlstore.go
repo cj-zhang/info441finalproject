@@ -151,7 +151,7 @@ func (store *MySQLStore) CreateTournament(t *Tournament) (*Tournament, error) {
 }
 
 // GetPlayers gets the information for a given amount of players from users
-func (store *MySQLStore) GetPlayers(tID int64, q int) ([]*User, error) {
+func (store *MySQLStore) GetPlayers(q int, tID int64) ([]*User, error) {
 	var result []*User
 	rows, err := store.Client.Query(getPlayers, tID, q)
 	if err != nil {
@@ -202,6 +202,11 @@ func (store *MySQLStore) RemoveTO(id int64, tID int64) error {
 		return err
 	}
 	return nil
+}
+
+// GetTO gets the information for a given game from the tournament_organizers table
+func (store *MySQLStore) GetTO(id int64, tID int64) (*User, error) {
+	return nil, nil
 }
 
 // GetTOs gets the information for a given amount of tournament organizers from users

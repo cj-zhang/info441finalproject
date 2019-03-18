@@ -11,21 +11,17 @@ type Tournament struct {
 	PhotoURL  string `json:"photoURL"`
 }
 
+// Standing represents player standing at a tournament
 type Standing struct {
-	ID        int64   `json:"id,omitempty"`
-	Placing   int     `json:"placing"`
-	Standing  string  `json:"standing"`
-	PastGames *[]Game `json:"pastGames"`
-	NextGame  *Game   `json:"NextGame,omitempty"`
+	UserID       int64   `json:"userID"`
+	TournamentID int64   `json:"tournamentID"`
+	Placing      int     `json:"placing"`
+	Standing     string  `json:"standing"`
+	PastGames    *[]Game `json:"pastGames,omitempty"`
+	NextGame     *Game   `json:"nextGame,omitempty"`
 }
 
-type StandingUpdate struct {
-	Placing   int     `json:"placing"`
-	Standing  string  `json:"standing"`
-	PastGames *[]Game `json:"pastGames"`
-	NextGame  *Game   `json:"NextGame,omitempty"`
-}
-
+// Game represents a game between two players at a tournament
 type Game struct {
 	ID                    int64      `json:"id,omitempty"`
 	TournamentID          int64      `json:"tournamentId,omitempty"`
@@ -40,6 +36,7 @@ type Game struct {
 	Result                string     `json:"result,omitempty"`
 }
 
+// GameUpdate represents an update to a game
 type GameUpdate struct {
 	ID         int64      `json:"id,omitempty"`
 	PlayerOne  int64      `json:"playerOne,omitempty"`

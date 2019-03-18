@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func failOnError(err error, msg string) {
@@ -54,12 +55,12 @@ func main() {
 	pong, err := redisDb.Ping().Result()
 	fmt.Println(pong, err)
 	redisStore := sessions.NewRedisStore(redisDb, 150*time.Second)
-
 	// create userStore through mySQL
-	db, _ := sql.Open("mysql", dsn)
+	db, err := sql.Open("mysql", dsn)
 	if err := db.Ping(); err != nil {
 		fmt.Printf("error pinging the db: %v\n", err)
 	}
+
 	userStore := &users.MySQLStore{
 		Client: db,
 	}
@@ -138,7 +139,7 @@ func main() {
 	// mux.Handle("/v1/messages/", msgProxy)
 	// mux.Handle("/v1/summary", summaryProxy)
 
-	mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
+	//mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
 	mux.HandleFunc("/v1/users", ctx.UsersHandler)
 	mux.HandleFunc("/v1/users/", ctx.SpecificUserHandler)
 	mux.HandleFunc("/v1/sessions", ctx.SessionsHandler)

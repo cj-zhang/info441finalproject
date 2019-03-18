@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/info441/info441finalproject/server/gateway/models"
+	"info441finalproject/server/gateway/models"
 )
 
 // *TODO*

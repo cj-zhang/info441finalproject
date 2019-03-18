@@ -101,6 +101,6 @@ func (store *MySQLStore) Delete(id int64) error {
 	return nil
 }
 
-func (store *MySQLStore) GetTournament(id int64) error {
+func (store *MySQLStore) GetTournament(id int64) (*Tournament, error) {
 
 }

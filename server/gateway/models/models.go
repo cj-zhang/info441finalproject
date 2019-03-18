@@ -11,6 +11,15 @@ type Tournament struct {
 	PhotoURL  string `json:"photoURL"`
 }
 
+//TournamentUpdate represents a tournament
+type TournamentUpdate struct {
+	URL       string `json:"url,omitempty"`
+	Location  string `json:"location,omitempty"`
+	Organizer int64  `json:"organizer,omitempty"`
+	PhotoURL  string `json:"photoURL,omitempty"`
+	Open      bool   `json:"open,omitempty"`
+}
+
 // Standing represents player standing at a tournament
 type Standing struct {
 	UserID       int64   `json:"userID"`

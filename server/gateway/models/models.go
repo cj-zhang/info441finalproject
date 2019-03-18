@@ -39,7 +39,6 @@ type Game struct {
 	PlayerTwo             int64      `json:"playerTwo,omitempty"`
 	Victor                int64      `json:"Victor,omitempty"`
 	DateTime              *time.Time `json:"datetime,omitempty"`
-	BracketID             int64      `json:"bracketId,omitempty"`
 	TournamentOrganizerID int64      `json:"tournamentOrganizerId,omitempty"`
 	InProgress            bool       `json:"inProgress,omitempty"`
 	Completed             bool       `json:"completed,omitempty"`

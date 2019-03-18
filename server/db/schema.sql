@@ -50,7 +50,6 @@ create table if not exists games (
     player_two int not null,
     victor int, 
     date_time datetime not null, 
-    bracket_id int not null,
     tournament_organizer_id int not null,
     in_progress boolean not null,
     completed boolean not null,

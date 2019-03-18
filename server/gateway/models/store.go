@@ -42,7 +42,7 @@ type Store interface {
 	DeleteTournament(id int64) error
 
 	// CreateTournament inserts a new tournament into the database
-	CreateTournament(t *Tournament) (*Tournament, error)
+	CreateTournament(t *Tournament, creator int64) (*Tournament, error)
 
 	// UpdateTournament updates a tournament with the given updates
 	UpdateTournament(tID int64, tu *TournamentUpdate) (*Tournament, error)

@@ -22,6 +22,49 @@ func GetTournamentIDFromURL(url string) (int, error) {
 	return tid, nil
 }
 
+// CreateGames creates all initial games for start of tournament once
+// Registration is closed
+func (ctx *TournamentContext) CreateGames(tid int64) error {
+	players, err := ctx.UserStore.GetAllPlayers(tid)
+	var game *models.Game
+	gameStarted := false
+	playerOne := true
+	for _, player := range players {
+		if playerOne == true {
+			game = new(models.Game)
+			gameStarted = true
+			game.TournamentID = tid
+			game.PlayerOne = player
+			organizer, err := ctx.UserStore.GetLeastBusyTO(tid)
+			if err != nil {
+				return err
+			}
+			game.TournamentOrganizerID = organizer
+			game.InProgress = false
+			game.Completed = false
+			playerOne = false
+		} else {
+			game.PlayerTwo = player
+			err := ctx.UserStore.CreateGame(tid, game)
+			if err != nil {
+				return err
+			}
+			gameStarted = false
+			playerOne = true
+		}
+	}
+	if gameStarted == true {
+		game.Victor = game.PlayerOne
+		game.Completed = true
+		game.Result = "Player one granted bye"
+		err := ctx.UserStore.CreateGame(tid, game)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // TourneyHandler handles requests for the '/smashqq/tournaments' resource
 // and '/smashqq/tournaments/{tournamentID}' resource
 // *TODO* maybe add update method?
@@ -74,7 +117,11 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 				return
 			}
 			if tournament.Open == false {
-				// Create games based on players registered
+				err := ctx.CreateGames(tournament.ID)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}
 			w.Header().Add("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -98,7 +145,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 				http.StatusBadRequest)
 			return
 		}
-		returnTournament, err := ctx.UserStore.CreateTournament(tournament)
+		returnTournament, err := ctx.UserStore.CreateTournament(tournament, int64(0)) // *TODO change to user id later
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

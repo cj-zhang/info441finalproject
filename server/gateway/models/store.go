@@ -42,7 +42,7 @@ type Store interface {
 	DeleteTournament(id int64) error
 
 	// CreateTournament inserts a new tournament into the database
-	CreateTournament(t *Tournament) (*Tournament, error)
+	CreateTournament(t *Tournament, creator int64) (*Tournament, error)
 
 	// GetPlayers gets the information for a given amount of players from users
 	GetPlayers(q int, tID int64) ([]*User, error)

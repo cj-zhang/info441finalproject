@@ -138,8 +138,8 @@ func (store *MySQLStore) DeleteTournament(id int64) error {
 }
 
 // CreateTournament inserts a new tournament into the database
-func (store *MySQLStore) CreateTournament(t *Tournament) (*Tournament, error) {
-	res, err := store.Client.Exec(insertTournament, t.URL, t.Location, t.Organizer, t.PhotoURL, t.Open)
+func (store *MySQLStore) CreateTournament(t *Tournament, creator int64) (*Tournament, error) {
+	res, err := store.Client.Exec(insertTournament, t.URL, t.Location, creator, t.PhotoURL, t.Open)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func (store *MySQLStore) GetTOs(q int, tID int64) ([]*User, error) {
 func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
 	g := &Game{}
 	row := store.Client.QueryRow(getGame, gID)
-	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.BracketID, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result); err != nil {
+	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result); err != nil {
 		return nil, err
 	}
 	return g, nil
@@ -255,7 +255,7 @@ func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
 	}
 	for rows.Next() {
 		g := &Game{}
-		err = rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.BracketID, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result)
+		err = rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result)
 		if err != nil {
 			return nil, err
 		}

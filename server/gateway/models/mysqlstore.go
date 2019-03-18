@@ -16,6 +16,7 @@ const deleteUser = "delete from users where id=?"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
 const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, open) values (?,?,?,?,?)"
+const updateTournament = "update tournaments set website=?, tournament_location=?, tournament_organizer_id=?, registration_open=?, photo_url=? where id=?"
 const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
 const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
 const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
@@ -151,6 +152,17 @@ func (store *MySQLStore) CreateTournament(t *Tournament) (*Tournament, error) {
 
 	t.ID = id
 	return t, nil
+}
+
+//
+
+// UpdateTournament updates a tournament with the given updates
+func (store *MySQLStore) UpdateTournament(tID int64, tu *TournamentUpdate) (*Tournament, error) {
+	_, err := store.Client.Exec(updateTournament, tu.URL, tu.Location, tu.Organizer, tu.Open, tu.PhotoURL, tID)
+	if err != nil {
+		return nil, err
+	}
+	return store.GetTournament(tID)
 }
 
 // GetPlayers gets the information for a given amount of players from users

@@ -44,6 +44,9 @@ type Store interface {
 	// CreateTournament inserts a new tournament into the database
 	CreateTournament(t *Tournament) (*Tournament, error)
 
+	// UpdateTournament updates a tournament with the given updates
+	UpdateTournament(tID int64, tu *TournamentUpdate) (*Tournament, error)
+
 	// GetPlayers gets the information for a given amount of players from users
 	GetPlayers(q int, tID int64) ([]*User, error)
 

@@ -7,7 +7,7 @@ type Tournament struct {
 	ID        int64  `json:"id,omitempty"`
 	URL       string `json:"url,omitempty"`
 	Location  string `json:"location"`
-	Organizer *User  `json:"organizer"`
+	Organizer int64  `json:"organizer"`
 	PhotoURL  string `json:"photoURL"`
 }
 
@@ -18,7 +18,7 @@ type Standing struct {
 	Placing      int     `json:"placing"`
 	Standing     string  `json:"standing"`
 	PastGames    *[]Game `json:"pastGames,omitempty"`
-	NextGame     *Game   `json:"nextGame,omitempty"`
+	NextGame     int64   `json:"nextGame,omitempty"`
 }
 
 // Game represents a game between two players at a tournament

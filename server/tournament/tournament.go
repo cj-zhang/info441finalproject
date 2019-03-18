@@ -7,6 +7,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
 //*TODO discussion questions*
@@ -66,7 +67,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
 			return
 		}
-		tournament := new(Tournament)
+		tournament := new(models.Tournament)
 		if err := json.NewDecoder(r.Body).Decode(tournament); err != nil {
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
 				http.StatusBadRequest)
@@ -327,7 +328,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
 			return
 		}
-		game := new(Game)
+		game := new(models.Game)
 		if err := json.NewDecoder(r.Body).Decode(game); err != nil {
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
 				http.StatusBadRequest)
@@ -346,7 +347,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
 			return
 		}
-		update := new(GamesUpdate)
+		update := new(models.GamesUpdate)
 		if err := json.NewDecoder(r.Body).Decode(update); err != nil {
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
 				http.StatusBadRequest)
@@ -432,7 +433,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
 			return
 		}
-		update := new(StandingUpdate)
+		update := new(models.StandingUpdate)
 		if err := json.NewDecoder(r.Body).Decode(update); err != nil {
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
 				http.StatusBadRequest)

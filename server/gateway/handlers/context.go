@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"info441finalproject/server/gateway/indexes"
-	"info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
 	"info441finalproject/server/gateway/sessions"
 )
 
@@ -15,7 +15,7 @@ import (
 type HandlerContext struct {
 	SigningKey  string         `json:"signingKey,omitempty"`
 	SessStore   sessions.Store `json:"sessStore,omitempty"`
-	UserStore   users.Store    `json:"userStore,omitempty"`
+	UserStore   models.Store   `json:"userStore,omitempty"`
 	SearchTrie  *indexes.Trie
 	SocketStore *SocketStore
 }

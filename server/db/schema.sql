@@ -13,6 +13,7 @@ create table if not exists tournaments (
     website varchar(2083),
     tounament_location varchar(255) not null,
     tournament_organizer_id int not null,
+    registration_open boolean,
     photo_url varchar(2083) not null
 );
 
@@ -26,6 +27,7 @@ create table if not exists players (
 create table if not exists tournament_organizers (
     u_id int not null,
     tournament_id int not null,
+    brackets_overseen int not null,
     FOREIGN KEY (u_id) REFERENCES users(id),
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
 );
@@ -46,19 +48,18 @@ create table if not exists games (
     tournament_id int not null,
     player_one int not null,
     player_two int not null,
+    victor int, 
     date_time datetime not null, 
     bracket_id int not null,
     tournament_organizer_id int not null,
     in_progress boolean not null,
     completed boolean not null,
-    result varchar(10) not null,
+    result varchar(255) not null,
     FOREIGN KEY (bracket_id) REFERENCES brackets(id),
     FOREIGN KEY (tournament_organizer_id) REFERENCES tournament_organizers(u_id),
     FOREIGN KEY (player_one) REFERENCES players(u_id),
     FOREIGN KEY (player_two) REFERENCES players(u_id)
 );
-
-
 
 -- create table if not exists single_tournament_users (
 --     id int not null auto_increment primary key,

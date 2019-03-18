@@ -1,4 +1,4 @@
-package users
+package models
 
 import (
 	"errors"
@@ -7,6 +7,9 @@ import (
 
 //ErrUserNotFound is returned when the user can't be found
 var ErrUserNotFound = errors.New("user not found")
+
+//ErrTournamentNotFound is returned when the tournament can't be found
+var ErrTournamentNotFound = errors.New("tournament not found")
 
 //Store represents a store for Users
 type Store interface {

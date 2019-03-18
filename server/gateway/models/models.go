@@ -1,14 +1,14 @@
 package models
 
-import "github.com/info441/info441finalproject/server/gateway/models/users"
+import "time"
 
 //Tournament represents a tournament
 type Tournament struct {
-	ID        int64       `json:"id,omitempty"`
-	URL       string      `json:"url,omitempty"`
-	Location  string      `json:"location"`
-	Organizer *users.User `json:"organizer"`
-	PhotoURL  string      `json:"photoURL"`
+	ID        int64  `json:"id,omitempty"`
+	URL       string `json:"url,omitempty"`
+	Location  string `json:"location"`
+	Organizer *User  `json:"organizer"`
+	PhotoURL  string `json:"photoURL"`
 }
 
 type Standing struct {
@@ -27,19 +27,28 @@ type StandingUpdate struct {
 }
 
 type Game struct {
-	ID        int64       `json:"id,omitempty"`
-	URL       string      `json:"url,omitempty"`
-	Location  string      `json:"location"`
-	Organizer *users.User `json:"organizer"`
-	PhotoURL  string      `json:"photoURL"`
+	ID                    int64      `json:"id,omitempty"`
+	TournamentID          int64      `json:"tournamentId,omitempty"`
+	PlayerOne             int64      `json:"playerOne,omitempty"`
+	PlayerTwo             int64      `json:"playerTwo,omitempty"`
+	Victor                int64      `json:"Victor,omitempty"`
+	DateTime              *time.Time `json:"datetime,omitempty"`
+	BracketID             int64      `json:"bracketId,omitempty"`
+	TournamentOrganizerID int64      `json:"tournamentOrganizerId,omitempty"`
+	InProgress            bool       `json:"inProgress,omitempty"`
+	Completed             bool       `json:"completed,omitempty"`
+	Result                string     `json:"result,omitempty"`
 }
 
 type GameUpdate struct {
-	ID        int64       `json:"id,omitempty"`
-	URL       string      `json:"url,omitempty"`
-	Location  string      `json:"location"`
-	Organizer *users.User `json:"organizer"`
-	PhotoURL  string      `json:"photoURL"`
+	ID         int64      `json:"id,omitempty"`
+	PlayerOne  int64      `json:"playerOne,omitempty"`
+	PlayerTwo  int64      `json:"playerTwo,omitempty"`
+	Victor     int64      `json:"Victor,omitempty"`
+	DateTime   *time.Time `json:"datetime,omitempty"`
+	InProgress bool       `json:"inProgress,omitempty"`
+	Completed  bool       `json:"completed,omitempty"`
+	Result     string     `json:"result,omitempty"`
 }
 
 // *TODO*

@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"info441finalproject/server/gateway/indexes"
-	"info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
 	"info441finalproject/server/gateway/sessions"
 	"net/http"
 	"path"
@@ -25,7 +25,7 @@ func (ctx *HandlerContext) UsersHandler(w http.ResponseWriter, r *http.Request) 
 		}
 		// decode request body JSON to a new user struct
 		// newUser --> user; store it into ctx.UserStore
-		nu := new(users.NewUser)
+		nu := new(models.NewUser)
 		dec := json.NewDecoder(r.Body)
 		err := dec.Decode(nu)
 		if err != nil {
@@ -79,7 +79,7 @@ func (ctx *HandlerContext) UsersHandler(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		ids := ctx.SearchTrie.ReturnPrefixMatches(20, qValue)
-		users := []users.User{}
+		users := []models.User{}
 		for _, id := range ids {
 			u, err := ctx.UserStore.GetByID(id)
 			if err != nil {
@@ -150,7 +150,7 @@ func (ctx *HandlerContext) SpecificUserHandler(w http.ResponseWriter, r *http.Re
 		}
 		oldFirstname := u.FirstName
 		oldLastname := u.LastName
-		updates := new(users.Updates)
+		updates := new(models.Updates)
 		err := json.NewDecoder(r.Body).Decode(updates)
 		if err != nil {
 			http.Error(w, "error decoding JSON from the response body", http.StatusBadRequest)
@@ -173,8 +173,8 @@ func (ctx *HandlerContext) SpecificUserHandler(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func getUserFromURL(userID string, w http.ResponseWriter, r *http.Request, ctx *HandlerContext) *users.User {
-	var result *users.User
+func getUserFromURL(userID string, w http.ResponseWriter, r *http.Request, ctx *HandlerContext) *models.User {
+	var result *models.User
 	if userID == "me" {
 		state := &SessionState{}
 		sessions.GetState(r, ctx.SigningKey, ctx.SessStore, state)
@@ -201,7 +201,7 @@ func getUserFromURL(userID string, w http.ResponseWriter, r *http.Request, ctx *
 	return result
 }
 
-func encode(w http.ResponseWriter, statusCode int, u *users.User) {
+func encode(w http.ResponseWriter, statusCode int, u *models.User) {
 	w.Header().Set(contentType, applicationJSON)
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(u)
@@ -215,7 +215,7 @@ func (ctx *HandlerContext) SessionsHandler(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "request body must be in json", http.StatusUnsupportedMediaType)
 			return
 		}
-		creds := &users.Credentials{}
+		creds := &models.Credentials{}
 		err := json.NewDecoder(r.Body).Decode(creds)
 		if err != nil {
 			http.Error(w, "error decoding json", http.StatusBadRequest)

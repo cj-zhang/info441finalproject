@@ -451,7 +451,3 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
-
-// BracketHandler handles requests for the '/smashqq/tournaments/{tournamentID}/brackets' resource
-func (ctx *TournamentContext) BracketHandler(w http.ResponseWriter, r *http.Request) {
-}

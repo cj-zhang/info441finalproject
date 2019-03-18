@@ -1,7 +1,7 @@
 package main
 
 import (
-	"info441finalproject/server/gateway/models"
+	"github.com/info441/info441finalproject/server/gateway/models"
 
 	"github.com/streadway/amqp"
 )
@@ -12,7 +12,6 @@ type TournamentContext struct {
 	UserStore     models.Store
 	RabbitChannel *amqp.Channel
 	QueueName     string
-	Standings     interface{}
 }
 
 // STANDINGS DATA STRUCTURE NOTES

@@ -11,18 +11,21 @@ import (
 	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
-//*TODO discussion questions*
-// What exactly do we need to implement?
-// Do we need to make the data structure that hold standings?
-// Stretch goal for seeing what games are next?
-
 // *TODO*
-// Record all the mysql methods that need to be defined
-// and record their parameter and return values
-//
 // Record all the methods that are needed to return
 // standings from the data structure
 //
+
+// GetTournamentIDFromURL retrieves the tournament id variable
+// from the url. Variable must be at base of url
+func GetTournamentIDFromURL(url string) (int, error) {
+	urlVar := path.Base(url)
+	tid, err := strconv.Atoi(urlVar)
+	if err != nil {
+		return 0, err
+	}
+	return tid, nil
+}
 
 // TourneyHandler handles requests for the '/smashqq/tournaments' resource
 // and '/smashqq/tournaments/{tournamentID}' resource
@@ -32,8 +35,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 	// Check if authenticated
 	//
 	if r.Method != http.MethodPost {
-		urlVar := path.Base(r.URL.String())
-		tid, err := strconv.Atoi(urlVar)
+		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
@@ -95,8 +97,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 	// *TODO*
 	// Check if authenticated
 	//
-	urlVar := path.Base(path.Dir(r.URL.String()))
-	tid, err := strconv.Atoi(urlVar)
+	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 		return
@@ -183,8 +184,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 	// *TODO*
 	// Check if authenticated
 	//
-	urlVar := path.Base(path.Dir(r.URL.String()))
-	tid, err := strconv.Atoi(urlVar)
+	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 		return
@@ -279,8 +279,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 	// *TODO*
 	// Check if authenticated
 	//
-	urlVar := path.Base(path.Dir(r.URL.String()))
-	tid, err := strconv.Atoi(urlVar)
+	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 		return
@@ -390,6 +389,11 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 	// *TODO*
 	// Check if authenticated
 	//
+	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
+	if err != nil {
+		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
+		return
+	}
 	if r.Method == http.MethodGet {
 		var standings interface{}
 		queryID := r.URL.Query().Get("id")
@@ -399,7 +403,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 				return
 			}
-			standings, err = ctx.Standings.GetPlayer(uid)
+			standings, err = ctx.Standings.GetPlayer(uid, tid)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -415,7 +419,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
 				return
 			}
-			standings, err = ctx.Standings.Get(q)
+			standings, err = ctx.Standings.Get(q, tid)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -450,8 +454,4 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
-}
-
-// BracketHandler handles requests for the '/smashqq/tournaments/{tournamentID}/brackets' resource
-func (ctx *TournamentContext) BracketHandler(w http.ResponseWriter, r *http.Request) {
 }

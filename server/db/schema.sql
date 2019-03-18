@@ -32,15 +32,15 @@ create table if not exists tournament_organizers (
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
 );
 
-create table if not exists brackets (
-    id int not null auto_increment primary key,
+create table if not exists standings (
+    u_id int not null,
     tournament_id int not null,
-    tournament_organizer_id int not null,
-    bracket_location varchar(255) not null,
-    in_progress boolean not null,
-    completed boolean not null,
-    FOREIGN KEY (tournament_id) REFERENCES tournaments(id),
-    FOREIGN KEY (tournament_organizer_id) REFERENCES tournament_organizers(u_id)
+    placing int not null,
+    standing varchar(128) not null,
+    next_match int,
+    FOREIGN KEY (u_id) REFERENCES users(id),
+    FOREIGN KEY (next_match) REFERENCES games(id),
+    FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
 );
 
 create table if not exists games (

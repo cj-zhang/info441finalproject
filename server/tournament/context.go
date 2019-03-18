@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/info441/info441finalproject/server/gateway/models/users"
 	"github.com/streadway/amqp"
 )
 
@@ -10,4 +11,16 @@ type TournamentContext struct {
 	UserStore     users.Store
 	RabbitChannel *amqp.Channel
 	QueueName     string
+	Standings     interface{}
 }
+
+// STANDINGS DATA STRUCTURE NOTES
+//
+// Standing for one player should include:
+// current placing (num value)
+// current standing (dqed, out, in)
+// list of games played and the brackets they were in
+// Next game and what bracket its in
+//
+// Overall Standings should include:
+// List of player standings in ascending order

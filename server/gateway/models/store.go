@@ -34,4 +34,43 @@ type Store interface {
 
 	//Delete deletes the user with the given ID
 	Delete(id int64) error
+
+	// GetTournament gets the information for one tournament
+	GetTournament(id int64) (*Tournament, error)
+
+	// DeleteTournament deletes the tournament with the given ID
+	DeleteTournament(id int64) error
+
+	// CreateTournament inserts a new tournament into the database
+	CreateTournament(t *Tournament) (*Tournament, error)
+
+	// GetPlayers gets the information for a given amount of players from users
+	GetPlayers(tID int64, q int) ([]*User, error)
+
+	// RegisterPlayer inserts a new user into the players table
+	RegisterPlayer(id int64, tID int64) error
+
+	// RemovePlayer deletes a user from the players table
+	RemovePlayer(id int64, tID int64) error
+
+	// RegisterTO inserts a new TO into the TO table
+	RegisterTO(id int64, tID int64) error
+
+	// RemoveTO deletes a TO from the TO table
+	RemoveTO(id int64, tID int64) error
+
+	// GetTOs gets the information for a given amount of tournament organizers from users
+	GetTOs(q int, tID int64) ([]*User, error)
+
+	// GetGame gets the information for a given game from the games table
+	GetGame(gID int64) (*Game, error)
+
+	// GetGames gets the information for a given amount of games from the games table
+	GetGames(q int, tID int64) ([]*Game, error)
+
+	// ReportGame applies given updates to a game
+	ReportGame(updates *GameUpdate) (*Game, error)
+
+	// UserIsTO checks if a given user is a tournament organizer for the given tournament
+	UserIsTO(id int64, tID int64) bool
 }

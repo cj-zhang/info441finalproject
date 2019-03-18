@@ -8,8 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	"info441finalproject/server/gateway/models"
+	"github.com/info441/info441finalproject/server/gateway/models"
 )
+
+//*TODO* change mysql game methods to include next game
+// mysql get games should only return games with both players not nil
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
@@ -25,7 +28,7 @@ func GetTournamentIDFromURL(url string) (int, error) {
 // CreateGames creates all initial games for start of tournament once
 // Registration is closed
 func (ctx *TournamentContext) CreateGames(tid int64) error {
-	// only ids
+	// only id
 	players, err := ctx.UserStore.GetAllPlayers(tid)
 	var game *models.Game
 	gameStarted := false
@@ -426,6 +429,26 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+		// If game is finished and game is not grands
+		if update.Completed == true && game.NextGame != 0 {
+			nextGameUpdate := new(models.GameUpdate)
+			nextGameUpdate.ID = game.NextGame
+			nextGame, err := ctx.UserStore.GetGame(game.NextGame)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if nextGame.PlayerOne == 0 {
+				nextGameUpdate.PlayerOne = game.Victor
+			} else if nextGame.PlayerTwo == 0 {
+				nextGameUpdate.PlayerTwo = game.Victor
+			}
+			_, err = ctx.UserStore.ReportGame(update)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

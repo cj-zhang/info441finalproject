@@ -1,7 +1,7 @@
 package main
 
 import (
-	"info441finalproject/server/gateway/models"
+	"github.com/info441/info441finalproject/server/gateway/models"
 
 	"github.com/streadway/amqp"
 )

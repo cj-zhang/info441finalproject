@@ -28,7 +28,6 @@ type Standing struct {
 	Placing      int     `json:"placing"`
 	Standing     string  `json:"standing"`
 	PastGames    *[]Game `json:"pastGames,omitempty"`
-	NextGame     int64   `json:"nextGame,omitempty"`
 }
 
 // Game represents a game between two players at a tournament
@@ -40,15 +39,15 @@ type Game struct {
 	Victor                int64      `json:"victor,omitempty"`
 	DateTime              *time.Time `json:"datetime,omitempty"`
 	TournamentOrganizerID int64      `json:"tournamentOrganizerId,omitempty"`
-	InProgress            bool       `json:"inProgress,omitempty"`
-	Completed             bool       `json:"completed,omitempty"`
+	InProgress            bool       `json:"inProgress"`
+	Completed             bool       `json:"completed"`
 	Result                string     `json:"result,omitempty"`
 	NextGame              int64      `json:"nextGame,omitempty"`
 }
 
 // GameUpdate represents an update to a game
 type GameUpdate struct {
-	ID         int64      `json:"id,omitempty"`
+	ID         int64      `json:"id"`
 	PlayerOne  int64      `json:"playerOne,omitempty"`
 	PlayerTwo  int64      `json:"playerTwo,omitempty"`
 	Victor     int64      `json:"victor,omitempty"`

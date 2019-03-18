@@ -329,7 +329,7 @@ func (store *MySQLStore) UserIsTO(id int64, tID int64) bool {
 func (store *MySQLStore) GetStanding(id int64, tID int64) (*Standing, error) {
 	s := &Standing{}
 	row := store.Client.QueryRow(getStanding, id, tID)
-	if err := row.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing, &s.NextGame); err != nil {
+	if err := row.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -345,7 +345,7 @@ func (store *MySQLStore) GetStandings(q int, tID int64) ([]*Standing, error) {
 	}
 	for rows.Next() {
 		s := &Standing{}
-		if err = rows.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing, &s.NextGame); err != nil {
+		if err = rows.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
 			return nil, err
 		}
 		result = append(result, s)

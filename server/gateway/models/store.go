@@ -45,7 +45,7 @@ type Store interface {
 	CreateTournament(t *Tournament) (*Tournament, error)
 
 	// GetPlayers gets the information for a given amount of players from users
-	GetPlayers(tID int64, q int) ([]*User, error)
+	GetPlayers(q int, tID int64) ([]*User, error)
 
 	// RegisterPlayer inserts a new user into the players table
 	RegisterPlayer(id int64, tID int64) error
@@ -58,6 +58,9 @@ type Store interface {
 
 	// RemoveTO deletes a TO from the TO table
 	RemoveTO(id int64, tID int64) error
+
+	// GetTO gets the information for a given game from the tournament_organizers table
+	GetTO(id int64, tID int64) (*User, error)
 
 	// GetTOs gets the information for a given amount of tournament organizers from users
 	GetTOs(q int, tID int64) ([]*User, error)

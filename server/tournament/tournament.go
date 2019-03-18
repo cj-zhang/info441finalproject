@@ -11,11 +11,6 @@ import (
 	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
-// *TODO*
-// Record all the methods that are needed to return
-// standings from the data structure
-//
-
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
 func GetTournamentIDFromURL(url string) (int, error) {
@@ -33,7 +28,7 @@ func GetTournamentIDFromURL(url string) (int, error) {
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
 	// *TODO*
 	// Check if authenticated
-	//
+
 	if r.Method != http.MethodPost {
 		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
@@ -41,7 +36,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		if r.Method == http.MethodGet {
-			tournament, err := ctx.UserStore.GetTournament(tid)
+			tournament, err := ctx.UserStore.GetTournament(int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -54,7 +49,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 				return
 			}
 		} else if r.Method == http.MethodDelete {
-			err = ctx.UserStore.DeleteTournament(tid)
+			err = ctx.UserStore.DeleteTournament(int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -116,7 +111,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
 				return
 			}
-			players, err = ctx.UserStore.GetPlayers(tid, q)
+			players, err = ctx.UserStore.GetPlayers(q, int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -127,7 +122,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 				http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 				return
 			}
-			players, err = ctx.UserStore.GetUser(uid)
+			players, err = ctx.UserStore.GetByID(int64(uid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -150,7 +145,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
 		}
-		err = ctx.UserStore.RegisterPlayer(uid, tid)
+		err = ctx.UserStore.RegisterPlayer(int64(uid), int64(tid))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -167,7 +162,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
 		}
-		err = ctx.UserStore.RemovePlayer(uid, tid)
+		err = ctx.UserStore.RemovePlayer(int64(uid), int64(tid))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -203,7 +198,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
 				return
 			}
-			organizers, err = ctx.UserStore.GetOrganizers(tid, q)
+			organizers, err = ctx.UserStore.GetTOs(q, int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -214,7 +209,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 				return
 			}
-			organizers, err = ctx.UserStore.GetOrganizer(oid)
+			organizers, err = ctx.UserStore.GetTO(int64(oid), int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -241,7 +236,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
 		}
-		err = ctx.UserStore.RegisterOrganizer(oid, tid)
+		err = ctx.UserStore.RegisterTO(int64(oid), int64(tid))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -262,7 +257,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
 		}
-		err = ctx.UserStore.RemoveOrganizer(oid, tid)
+		err = ctx.UserStore.RemoveTO(int64(oid), int64(tid))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -293,7 +288,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.Error(w, "Must supply a valid game ID", http.StatusBadRequest)
 				return
 			}
-			games, err = ctx.UserStore.GetGame(gid)
+			games, err = ctx.UserStore.GetGame(int64(gid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -309,7 +304,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
 				return
 			}
-			games, err = ctx.Standings.GetGames(q, tid)
+			games, err = ctx.UserStore.GetGames(q, int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -322,32 +317,32 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.StatusInternalServerError)
 			return
 		}
-	} else if r.Method == http.MethodPost {
-		header := r.Header.Get("Content-Type")
-		if !strings.HasPrefix(header, "application/json") {
-			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
-			return
-		}
-		game := new(models.Game)
-		if err := json.NewDecoder(r.Body).Decode(game); err != nil {
-			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
-				http.StatusBadRequest)
-			return
-		}
-		err := ctx.UserStore.CreateGame(game, tid)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte("Game Created"))
+		// } else if r.Method == http.MethodPost {
+		// 	header := r.Header.Get("Content-Type")
+		// 	if !strings.HasPrefix(header, "application/json") {
+		// 		http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
+		// 		return
+		// 	}
+		// 	game := new(models.Game)
+		// 	if err := json.NewDecoder(r.Body).Decode(game); err != nil {
+		// 		http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
+		// 			http.StatusBadRequest)
+		// 		return
+		// 	}
+		// 	err := ctx.UserStore.CreateGame(game, tid)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+		// 	w.WriteHeader(http.StatusCreated)
+		// 	w.Write([]byte("Game Created"))
 	} else if r.Method == http.MethodPatch {
 		header := r.Header.Get("Content-Type")
 		if !strings.HasPrefix(header, "application/json") {
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
 			return
 		}
-		update := new(models.GamesUpdate)
+		update := new(models.GameUpdate)
 		if err := json.NewDecoder(r.Body).Decode(update); err != nil {
 			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
 				http.StatusBadRequest)
@@ -360,25 +355,25 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(games); err != nil {
+		if err := json.NewEncoder(w).Encode(game); err != nil {
 			http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err),
 				http.StatusInternalServerError)
 			return
 		}
-	} else if r.Method == http.MethodDelete {
-		queryID := r.URL.Query().Get("id")
-		gid, err := strconv.Atoi(queryID)
-		if err != nil {
-			http.Error(w, "Must supply a valid game ID", http.StatusBadRequest)
-			return
-		}
-		err = ctx.UserStore.DeleteGame(gid)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Game deleted"))
+		// } else if r.Method == http.MethodDelete {
+		// 	queryID := r.URL.Query().Get("id")
+		// 	gid, err := strconv.Atoi(queryID)
+		// 	if err != nil {
+		// 		http.Error(w, "Must supply a valid game ID", http.StatusBadRequest)
+		// 		return
+		// 	}
+		// 	err = ctx.UserStore.DeleteGame(gid)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+		// 	w.WriteHeader(http.StatusOK)
+		// 	w.Write([]byte("Game deleted"))
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -432,25 +427,25 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 				http.StatusInternalServerError)
 			return
 		}
-	} else if r.Method == http.MethodPatch {
-		header := r.Header.Get("Content-Type")
-		if !strings.HasPrefix(header, "application/json") {
-			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
-			return
-		}
-		update := new(models.StandingUpdate)
-		if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-			http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
-				http.StatusBadRequest)
-			return
-		}
-		err := ctx.UserStore.Update(update)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Standings updated"))
+		// } else if r.Method == http.MethodPatch {
+		// 	header := r.Header.Get("Content-Type")
+		// 	if !strings.HasPrefix(header, "application/json") {
+		// 		http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
+		// 		return
+		// 	}
+		// 	update := new(models.StandingUpdate)
+		// 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
+		// 		http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
+		// 			http.StatusBadRequest)
+		// 		return
+		// 	}
+		// 	err := ctx.UserStore.Update(update)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 		return
+		// 	}
+		// 	w.WriteHeader(http.StatusOK)
+		// 	w.Write([]byte("Standings updated"))
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}

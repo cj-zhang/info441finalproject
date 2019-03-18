@@ -56,6 +56,33 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			}
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("tournament deleted"))
+		} else if r.Method == http.MethodPatch {
+			header := r.Header.Get("Content-Type")
+			if !strings.HasPrefix(header, "application/json") {
+				http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
+				return
+			}
+			update := new(models.TournamentUpdate)
+			if err := json.NewDecoder(r.Body).Decode(update); err != nil {
+				http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
+					http.StatusBadRequest)
+				return
+			}
+			tournament, err := ctx.UserStore.UpdateTournament(update)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if tournament.Open == false {
+				// Create games based on players registered
+			}
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if err := json.NewEncoder(w).Encode(tournament); err != nil {
+				http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err),
+					http.StatusInternalServerError)
+				return
+			}
 		} else {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

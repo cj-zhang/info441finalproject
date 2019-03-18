@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/info441/info441finalproject/server/gateway/models"
+	"info441finalproject/server/gateway/models"
 )
 
 // GetTournamentIDFromURL retrieves the tournament id variable
@@ -25,6 +25,7 @@ func GetTournamentIDFromURL(url string) (int, error) {
 // CreateGames creates all initial games for start of tournament once
 // Registration is closed
 func (ctx *TournamentContext) CreateGames(tid int64) error {
+	// only ids
 	players, err := ctx.UserStore.GetAllPlayers(tid)
 	var game *models.Game
 	gameStarted := false

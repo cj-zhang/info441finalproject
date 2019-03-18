@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"assignments-cj-zhang/servers/gateway/models/users"
 	"fmt"
+	"info441finalproject/server/gateway/models"
 	"time"
 )
 
@@ -16,12 +16,12 @@ func (ms *MyMockStore) LogUserSignIn(id int64, datetime time.Time, ip string) er
 }
 
 // GetByID mocks the behavior of GetByID
-func (ms *MyMockStore) GetByID(id int64) (*users.User, error) {
+func (ms *MyMockStore) GetByID(id int64) (*models.User, error) {
 	// We can trigger an error by passing in an id of 2
 	if id == 2 {
 		return nil, fmt.Errorf("Error getting user with id: %d", id)
 	}
-	user := &users.User{
+	user := &models.User{
 		ID:        1,
 		Email:     "test@test.com",
 		PassHash:  []byte("passwordHash"),
@@ -35,12 +35,12 @@ func (ms *MyMockStore) GetByID(id int64) (*users.User, error) {
 }
 
 // GetByEmail mocks the behavior of GetByEmail
-func (ms *MyMockStore) GetByEmail(email string) (*users.User, error) {
+func (ms *MyMockStore) GetByEmail(email string) (*models.User, error) {
 	// We can trigger an error by passing in an email of "two"
 	if email == "two" {
 		return nil, fmt.Errorf("Error getting user with email: %s", email)
 	}
-	user := &users.User{
+	user := &models.User{
 		ID:        1,
 		Email:     "test@test.com",
 		PassHash:  []byte("passwordHash"),
@@ -54,12 +54,12 @@ func (ms *MyMockStore) GetByEmail(email string) (*users.User, error) {
 }
 
 // GetByUserName mocks the behavior of GetByUserName
-func (ms *MyMockStore) GetByUserName(username string) (*users.User, error) {
+func (ms *MyMockStore) GetByUserName(username string) (*models.User, error) {
 	// We can trigger an error by passing in an email of "two"
 	if username == "two" {
 		return nil, fmt.Errorf("Error getting user with username: %s", username)
 	}
-	user := &users.User{
+	user := &models.User{
 		ID:        1,
 		Email:     "test@test.com",
 		PassHash:  []byte("passwordHash"),
@@ -73,7 +73,7 @@ func (ms *MyMockStore) GetByUserName(username string) (*users.User, error) {
 }
 
 // Insert mocks the behavior of Insert
-func (ms *MyMockStore) Insert(user *users.User) (*users.User, error) {
+func (ms *MyMockStore) Insert(user *models.User) (*models.User, error) {
 	if user.FirstName == "Error" {
 		return nil, fmt.Errorf("Error Inserting New User")
 	}
@@ -84,12 +84,12 @@ func (ms *MyMockStore) Insert(user *users.User) (*users.User, error) {
 }
 
 // Update mocks the behavior of Update
-func (ms *MyMockStore) Update(id int64, updates *users.Updates) (*users.User, error) {
+func (ms *MyMockStore) Update(id int64, updates *models.Updates) (*models.User, error) {
 	// We can trigger an error by passing in an id of 2
 	if id == 2 {
 		return nil, fmt.Errorf("Error updating user with id: %d", id)
 	}
-	user := &users.User{
+	user := &models.User{
 		ID:        1,
 		Email:     "test@test.com",
 		PassHash:  []byte("passwordHash"),

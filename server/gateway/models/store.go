@@ -76,4 +76,10 @@ type Store interface {
 
 	// UserIsTO checks if a given user is a tournament organizer for the given tournament
 	UserIsTO(id int64, tID int64) bool
+
+	// GetStanding gets a single standing for the given user at a given tournament
+	GetStanding(id int64, tID int64) (*Standing, error)
+
+	// GetStandings gets the standings associated with a given tournament
+	GetStandings(q int, tID int64) ([]*Standing, error)
 }

@@ -24,8 +24,10 @@ const getTO = "Select id, email, username, pass_hash, first_name, last_name, pho
 const getTOs = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers to on u.id = to.u_id where to.tournament_id=? limit ?"
 const insertTO = "insert into tournament_organizers(u_id, tournament_id) values (?,?)"
 const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
+const getLeastBusyTO = "select top(1) u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc"
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
+const createGame = "insert into games(tournament_id, player_one, player_two, victor, date_time, tournament_organizer_id, in_progress, completed, result) values (?,?,?,?,?,?,?,?,?)"
 const updateGame = "update games set player_one=?, player_two=?, victor=?, date_time=?, in_progress=?, completed=?, result=? where id=?"
 const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
 const getStanding = "Select * from standings where u_id=? and tournament_id=?"
@@ -165,6 +167,11 @@ func (store *MySQLStore) UpdateTournament(tID int64, tu *TournamentUpdate) (*Tou
 	return store.GetTournament(tID)
 }
 
+// GetAllPlayers gets all players from a given tournament
+func (store *MySQLStore) GetAllPlayers(tID int64) ([]*User, error) {
+	return store.GetPlayers(0, tID)
+}
+
 // GetPlayers gets the information for a given amount of players from users
 func (store *MySQLStore) GetPlayers(q int, tID int64) ([]*User, error) {
 	var result []*User
@@ -246,6 +253,25 @@ func (store *MySQLStore) GetTOs(q int, tID int64) ([]*User, error) {
 		result = append(result, u)
 	}
 	return result, nil
+}
+
+// GetLeastBusyTO gets the TO with the least amount of brackets overseen
+func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
+	var userID int64
+	row := store.Client.QueryRow(getLeastBusyTO, tID)
+	if err := row.Scan(userID); err != nil {
+		return nil, err
+	}
+	return store.GetTO(userID, tID)
+}
+
+// CreateGame creates and inserts a new game into the games table
+func (store *MySQLStore) CreateGame(tID int64, g *Game) error {
+	_, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetGame gets the information for a given game from the games table

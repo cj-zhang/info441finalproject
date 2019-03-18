@@ -25,6 +25,7 @@ const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
 const updateGame = "update games set player_one=?, player_two=?, victor=?, date_time=?, in_progress=?, completed=?, result=? where id=?"
+const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
 
 // MySQLStore implements the Store interface and holds a pointer to a db
 type MySQLStore struct {
@@ -257,4 +258,12 @@ func (store *MySQLStore) ReportGame(updates *GameUpdate) (*Game, error) {
 	}
 
 	return store.GetGame(updates.ID)
+}
+
+// UserIsTO checks if a given user is a tournament organizer for the given tournament
+func (store *MySQLStore) UserIsTO(id int64, tID int64) bool {
+	var bracketsOverseen int
+	row := store.Client.QueryRow(checkIfTO, id, tID)
+	err := row.Scan(&bracketsOverseen)
+	return (err == nil && err != sql.ErrNoRows)
 }

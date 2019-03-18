@@ -54,5 +54,3 @@ type GameUpdate struct {
 // *TODO*
 // Create standings struct
 // Create standings update struct
-// Create games struct
-// Create games update struct

@@ -15,7 +15,7 @@ const updateUser = "update users set first_name=?, last_name=? where id=?"
 const deleteUser = "delete from users where id=?"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
-const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url) values (?,?,?,?)"
+const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, open) values (?,?,?,?,?)"
 const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
 const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
 const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
@@ -121,7 +121,7 @@ func (store *MySQLStore) Delete(id int64) error {
 func (store *MySQLStore) GetTournament(id int64) (*Tournament, error) {
 	t := &Tournament{}
 	row := store.Client.QueryRow(getTournament, id)
-	if err := row.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.PhotoURL); err != nil {
+	if err := row.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.PhotoURL, &t.Open); err != nil {
 		return nil, ErrTournamentNotFound
 	}
 
@@ -139,7 +139,7 @@ func (store *MySQLStore) DeleteTournament(id int64) error {
 
 // CreateTournament inserts a new tournament into the database
 func (store *MySQLStore) CreateTournament(t *Tournament) (*Tournament, error) {
-	res, err := store.Client.Exec(insertTournament, t.URL, t.Location, t.Organizer, t.PhotoURL)
+	res, err := store.Client.Exec(insertTournament, t.URL, t.Location, t.Organizer, t.PhotoURL, t.Open)
 	if err != nil {
 		return nil, err
 	}

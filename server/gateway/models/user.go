@@ -1,4 +1,4 @@
-package users
+package models
 
 import (
 	"crypto/md5"

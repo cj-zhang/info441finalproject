@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
 	"time"
 )
 
@@ -10,5 +10,5 @@ import (
 //remember that other packages can only see exported fields!
 type SessionState struct {
 	StartTime time.Time
-	User      *users.User
+	User      *models.User
 }

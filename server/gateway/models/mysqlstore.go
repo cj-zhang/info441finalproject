@@ -1,0 +1,260 @@
+package models
+
+import (
+	"database/sql"
+	"time"
+)
+
+const selAllSQL = "select id, username, first_name, last_name from users"
+const insertSignIn = "insert into signins(id, login_time, ip_addr) values (?,?,?)"
+const idSelect = "Select * From users Where id=?"
+const emailSelect = "Select * From users Where email=?"
+const usernameSelect = "Select * From users Where username=?"
+const insertUser = "insert into users(email, pass_hash, username, first_name, last_name, photo_url) values (?,?,?,?,?,?)"
+const updateUser = "update users set first_name=?, last_name=? where id=?"
+const deleteUser = "delete from users where id=?"
+const getTournament = "Select * From tournaments Where id=?"
+const deleteTournament = "delete From tournaments Where id=?"
+const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url) values (?,?,?,?)"
+const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
+const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
+const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
+const getTOs = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers to on u.id = to.u_id where to.tournament_id=? limit ?"
+const insertTO = "insert into tournament_organizers(u_id, tournament_id) values (?,?)"
+const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
+const getGame = "Select * From games where id=?"
+const getGames = "Select * From games where tournament_id=? limit ?"
+const updateGame = "update games set player_one=?, player_two=?, victor=?, date_time=?, in_progress=?, completed=?, result=? where id=?"
+
+// MySQLStore implements the Store interface and holds a pointer to a db
+type MySQLStore struct {
+	Client *sql.DB
+}
+
+// NewMySQLStore constructs and returns a pointer to a MySQLStore struct
+func NewMySQLStore(db *sql.DB) *MySQLStore {
+	if db != nil {
+		return &MySQLStore{
+			Client: db,
+		}
+	}
+	return nil
+}
+
+// LogUserSignIn logs a user signin
+func (store *MySQLStore) LogUserSignIn(id int64, datetime time.Time, ip string) error {
+	_, err := store.Client.Exec(insertSignIn, id, datetime, ip)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetByID returns a user struct populated by a database row with a matching id
+func (store *MySQLStore) GetByID(id int64) (*User, error) {
+	return store.GetByParam(idSelect, id)
+
+}
+
+// GetByEmail returns a user struct populated by a database row with a matching email
+func (store *MySQLStore) GetByEmail(email string) (*User, error) {
+	return store.GetByParam(emailSelect, email)
+}
+
+// GetByUserName returns a user struct populated by a database row with a matching username
+func (store *MySQLStore) GetByUserName(username string) (*User, error) {
+	return store.GetByParam(usernameSelect, username)
+}
+
+// GetByParam returns a user struct populated by a database row with matching column values
+func (store *MySQLStore) GetByParam(selectSQL string, paramVal interface{}) (*User, error) {
+	u := &User{}
+	row := store.Client.QueryRow(selectSQL, paramVal)
+	if err := row.Scan(&u.ID, &u.Email, &u.PassHash, &u.UserName, &u.FirstName, &u.LastName, &u.PhotoURL); err != nil {
+		return nil, ErrUserNotFound
+	}
+
+	return u, nil
+}
+
+// Insert inserts the user into the database, and returns
+// the newly-inserted User, complete with the DBMS-assigned ID
+func (store *MySQLStore) Insert(user *User) (*User, error) {
+	res, err := store.Client.Exec(insertUser, user.Email, user.PassHash, user.UserName, user.FirstName, user.LastName, user.PhotoURL)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	user.ID = id
+	return user, nil
+}
+
+// Update applies Updates to the given user ID and returns the newly-updated user
+func (store *MySQLStore) Update(id int64, updates *Updates) (*User, error) {
+	_, err := store.Client.Exec(updateUser, updates.FirstName, updates.LastName, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return store.GetByID(id)
+}
+
+// Delete deletes the user with the given ID
+func (store *MySQLStore) Delete(id int64) error {
+	_, err := store.Client.Exec(deleteUser, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetTournament gets the information for one tournament
+func (store *MySQLStore) GetTournament(id int64) (*Tournament, error) {
+	t := &Tournament{}
+	row := store.Client.QueryRow(getTournament, id)
+	if err := row.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.PhotoURL); err != nil {
+		return nil, ErrTournamentNotFound
+	}
+
+	return t, nil
+}
+
+// DeleteTournament deletes the tournament with the given ID
+func (store *MySQLStore) DeleteTournament(id int64) error {
+	_, err := store.Client.Exec(deleteTournament, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateTournament inserts a new tournament into the database
+func (store *MySQLStore) CreateTournament(t *Tournament) (*Tournament, error) {
+	res, err := store.Client.Exec(insertTournament, t.URL, t.Location, t.Organizer, t.PhotoURL)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	t.ID = id
+	return t, nil
+}
+
+// GetPlayers gets the information for a given amount of players from users
+func (store *MySQLStore) GetPlayers(tID int64, q int) ([]*User, error) {
+	var result []*User
+	rows, err := store.Client.Query(getPlayers, tID, q)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		u := &User{}
+		err = rows.Scan(&u.ID, &u.Email, &u.UserName, &u.PassHash, &u.FirstName, &u.LastName, &u.PhotoURL)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, u)
+	}
+	return result, nil
+}
+
+// RegisterPlayer inserts a new user into the players table
+func (store *MySQLStore) RegisterPlayer(id int64, tID int64) error {
+	_, err := store.Client.Exec(insertPlayer, id, tID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RemovePlayer deletes a user from the players table
+func (store *MySQLStore) RemovePlayer(id int64, tID int64) error {
+	_, err := store.Client.Exec(deletePlayer, id, tID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RegisterTO inserts a new TO into the TO table
+func (store *MySQLStore) RegisterTO(id int64, tID int64) error {
+	_, err := store.Client.Exec(insertTO, id, tID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RemoveTO deletes a TO from the TO table
+func (store *MySQLStore) RemoveTO(id int64, tID int64) error {
+	_, err := store.Client.Exec(deleteTO, id, tID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetTOs gets the information for a given amount of tournament organizers from users
+func (store *MySQLStore) GetTOs(q int, tID int64) ([]*User, error) {
+	var result []*User
+	rows, err := store.Client.Query(getTOs, tID, q)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		u := &User{}
+		err = rows.Scan(&u.ID, &u.Email, &u.UserName, &u.PassHash, &u.FirstName, &u.LastName, &u.PhotoURL)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, u)
+	}
+	return result, nil
+}
+
+// GetGame gets the information for a given game from the games table
+func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
+	g := &Game{}
+	row := store.Client.QueryRow(getGame, gID)
+	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.BracketID, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result); err != nil {
+		return nil, ErrTournamentNotFound
+	}
+	return g, nil
+}
+
+// GetGames gets the information for a given amount of games from the games table
+func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
+	var result []*Game
+	rows, err := store.Client.Query(getGames, tID, q)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		g := &Game{}
+		err = rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.BracketID, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, g)
+	}
+	return result, nil
+}
+
+// ReportGame applies given updates to a game
+func (store *MySQLStore) ReportGame(updates *GameUpdate) (*Game, error) {
+	_, err := store.Client.Exec(updateGame, updates.PlayerOne, updates.PlayerTwo, updates.Victor, updates.DateTime, updates.InProgress, updates.Completed, updates.Result, updates.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return store.GetGame(updates.ID)
+}

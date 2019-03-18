@@ -9,6 +9,7 @@ type Tournament struct {
 	Location  string `json:"location"`
 	Organizer int64  `json:"organizer"`
 	PhotoURL  string `json:"photoURL"`
+	Open      bool   `json:"open"`
 }
 
 //TournamentUpdate represents a tournament

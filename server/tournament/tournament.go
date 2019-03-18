@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"info441finalproject/server/gateway/models"
+	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
 // GetTournamentIDFromURL retrieves the tournament id variable
@@ -398,7 +398,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 				return
 			}
-			standings, err = ctx.UserStore.GetPlayerStanding(uid, tid)
+			standings, err = ctx.UserStore.GetStanding(int64(uid), int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -414,7 +414,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
 				return
 			}
-			standings, err = ctx.UserStore.GetStandings(q, tid)
+			standings, err = ctx.UserStore.GetStandings(q, int64(tid))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/info441/info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
+
 	"github.com/streadway/amqp"
 )
 
 //TournamentContext holds access to session variables and
 //is a receiver on various HTTP handler functions
 type TournamentContext struct {
-	UserStore     users.Store
+	UserStore     models.Store
 	RabbitChannel *amqp.Channel
 	QueueName     string
 	Standings     interface{}

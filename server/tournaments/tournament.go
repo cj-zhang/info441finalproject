@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"info441finalproject/server/gateway/models"
+	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
 // GetTournamentIDFromURL retrieves the tournament id variable
@@ -71,7 +71,6 @@ func (ctx *TournamentContext) CreateGames(tid int64) error {
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
 	// *TODO*
 	// Check if authenticated
-
 	if r.Method != http.MethodPost {
 		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
@@ -111,7 +110,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 					http.StatusBadRequest)
 				return
 			}
-			tournament, err := ctx.UserStore.UpdateTournament(update)
+			tournament, err := ctx.UserStore.UpdateTournament(int64(tid), update)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

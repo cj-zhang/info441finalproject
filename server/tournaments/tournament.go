@@ -27,29 +27,34 @@ func GetTournamentIDFromURL(url string) (int, error) {
 func (ctx *TournamentContext) CreateGames(tid int64) error {
 	// only ids
 	players, err := ctx.UserStore.GetAllPlayers(tid)
+	if err != nil {
+		return err
+	}
 	var game *models.Game
 	gameStarted := false
 	playerOne := true
+	var roundOneGames []*models.Game
 	for _, player := range players {
 		if playerOne == true {
 			game = new(models.Game)
 			gameStarted = true
 			game.TournamentID = tid
-			game.PlayerOne = player
+			game.PlayerOne = player.ID
 			organizer, err := ctx.UserStore.GetLeastBusyTO(tid)
 			if err != nil {
 				return err
 			}
-			game.TournamentOrganizerID = organizer
+			game.TournamentOrganizerID = organizer.ID
 			game.InProgress = false
 			game.Completed = false
 			playerOne = false
 		} else {
-			game.PlayerTwo = player
-			err := ctx.UserStore.CreateGame(tid, game)
+			game.PlayerTwo = player.ID
+			_, err := ctx.UserStore.CreateGame(tid, game)
 			if err != nil {
 				return err
 			}
+			roundOneGames = append(roundOneGames, game)
 			gameStarted = false
 			playerOne = true
 		}
@@ -58,10 +63,51 @@ func (ctx *TournamentContext) CreateGames(tid int64) error {
 		game.Victor = game.PlayerOne
 		game.Completed = true
 		game.Result = "Player one granted bye"
-		err := ctx.UserStore.CreateGame(tid, game)
+		_, err := ctx.UserStore.CreateGame(tid, game)
 		if err != nil {
 			return err
 		}
+		roundOneGames = append(roundOneGames, game)
+	}
+
+	err = ctx.CreateBracket(tid, roundOneGames)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateBracket makes the rest of the bracket given an array of round1 games
+func (ctx *TournamentContext) CreateBracket(tid int64, games []*models.Game) error {
+	if len(games) > 1 {
+		var nextGame *models.Game
+		var nextRoundGames []*models.Game
+		for i := range games {
+			if i%2 == 0 {
+				nextGame = new(models.Game)
+				nextGame.TournamentID = tid
+				organizer, err := ctx.UserStore.GetLeastBusyTO(tid)
+				if err != nil {
+					return err
+				}
+				nextGame.TournamentOrganizerID = organizer.ID
+				nextGame.InProgress = false
+				nextGame.Completed = false
+				nextGame, err = ctx.UserStore.CreateGame(tid, nextGame)
+				if err != nil {
+					return err
+				}
+			} else {
+				nextRoundGames = append(nextRoundGames, nextGame)
+			}
+			games[i].NextGame = nextGame.ID
+		}
+
+		// if odd number of gaes
+		if len(games)%2 == 1 {
+			nextRoundGames = append(nextRoundGames, nextGame)
+		}
+		return ctx.CreateBracket(tid, nextRoundGames)
 	}
 	return nil
 }

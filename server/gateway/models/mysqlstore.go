@@ -266,12 +266,17 @@ func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 }
 
 // CreateGame creates and inserts a new game into the games table
-func (store *MySQLStore) CreateGame(tID int64, g *Game) error {
-	_, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result)
+func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
+	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	gameID, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+	g.ID = gameID
+	return g, nil
 }
 
 // GetGame gets the information for a given game from the games table

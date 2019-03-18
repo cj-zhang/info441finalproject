@@ -47,6 +47,9 @@ type Store interface {
 	// UpdateTournament updates a tournament with the given updates
 	UpdateTournament(tID int64, tu *TournamentUpdate) (*Tournament, error)
 
+	// GetAllPlayers gets all players from a given tournament
+	GetAllPlayers(tID int64) ([]*User, error)
+
 	// GetPlayers gets the information for a given amount of players from users
 	GetPlayers(q int, tID int64) ([]*User, error)
 
@@ -67,6 +70,12 @@ type Store interface {
 
 	// GetTOs gets the information for a given amount of tournament organizers from users
 	GetTOs(q int, tID int64) ([]*User, error)
+
+	// GetLeastBusyTO gets the TO with the least amount of brackets overseen
+	GetLeastBusyTO(tID int64) (*User, error)
+
+	// CreateGame creates and inserts a new game into the games table
+	CreateGame(tID int64, g *Game) (*Game, error)
 
 	// GetGame gets the information for a given game from the games table
 	GetGame(gID int64) (*Game, error)

@@ -6,11 +6,12 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import Players from "./components/Players";
 import "./index.css";
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 const outlet = document.getElementById("root");
 ReactDOM.render(
     <Router exact path="/" component={Layout}>
-        <Route component={Home} />
+        <Route path="/" component={Home} />
         <Route path="/profile" component={Profile} />
         <Route path="/players" component={Players} />
     </Router>,

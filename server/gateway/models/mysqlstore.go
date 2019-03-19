@@ -35,9 +35,6 @@ const getAllGames = "Select * From games where tournament_id=?"
 const createGame = "insert into games(tournament_id, player_one, player_two, victor, tournament_organizer_id, in_progress, completed, result, next_game) values (?,?,?,?,?,?,?,?,?)"
 const updateGame = "update games set player_one=?, player_two=?, victor=?, in_progress=?, completed=?, result=? where id=?"
 const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
-const getStanding = "Select * from standings where u_id=? and tournament_id=?"
-const getStandings = "Select * from standings where tournament_id=? limit ?"
-const getAllStandings = "Select * from standings where tournament_id=?"
 
 // MySQLStore implements the Store interface and holds a pointer to a db
 type MySQLStore struct {
@@ -366,38 +363,4 @@ func (store *MySQLStore) UserIsTO(id int64, tID int64) bool {
 	row := store.Client.QueryRow(checkIfTO, id, tID)
 	err := row.Scan(&bracketsOverseen)
 	return (err == nil && err != sql.ErrNoRows)
-}
-
-// GetStanding gets a single standing for the given user at a given tournament
-func (store *MySQLStore) GetStanding(id int64, tID int64) (*Standing, error) {
-	s := &Standing{}
-	row := store.Client.QueryRow(getStanding, id, tID)
-	if err := row.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
-		return nil, err
-	}
-	return s, nil
-
-}
-
-// GetStandings gets the standings associated with a given tournament
-func (store *MySQLStore) GetStandings(q int, tID int64) ([]*Standing, error) {
-	var result []*Standing
-	var rows *sql.Rows
-	var err error
-	if q == 0 {
-		rows, err = store.Client.Query(getAllStandings, tID)
-	} else {
-		rows, err = store.Client.Query(getStandings, tID, q)
-	}
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		s := &Standing{}
-		if err = rows.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
-			return nil, err
-		}
-		result = append(result, s)
-	}
-	return result, nil
 }

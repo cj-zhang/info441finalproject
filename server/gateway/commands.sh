@@ -29,6 +29,7 @@ export TLSKEY=/etc/letsencrypt/live/smash.chenjosephzhang.me/privkey.pem
 export DSN="root:$MYSQL_ROOT_PASSWORD@tcp(mydb:3306)/mysql"
 export REDISADDR="sessionstore:6379"
 export SESSIONKEY="placeholder"
+export TOURNAMENTADDR="tournaments:80"
 export RABBITADDR="amqp://guest:guest@rabbit:5672/"
 # export SUMMARYADDR="summary:80"
 # export MESSAGESADDR="messaging:80"
@@ -50,4 +51,5 @@ docker run -d \
 -e DSN=$DSN \
 -e SUMMARYADDR=$SUMMARYADDR \
 -e RABBITADDR=$RABBITADDR \
+-e TOURNAMENTADDR=$TOURNAMENTADDR \
 cjzhang/smash

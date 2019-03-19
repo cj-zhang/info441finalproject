@@ -6,3 +6,11 @@
 	"FirstName"   : "Kevin",
 	"LastName"   :  "Xu"
 }
+
+{
+    "id": 1,
+    "userName": "kevinx97",
+    "firstName": "Kevin",
+    "lastName": "Xu",
+    "photoURL": "https://www.gravatar.com/avatar/8550631b0d1aba19f0b070bcd054ccb8"
+}

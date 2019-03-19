@@ -3,24 +3,56 @@ import "./style.css";
 
 
 export default class Tournaments extends Component {
-    componentDidMount() {
-        fetch("https://smash.chenjosephzhang.me/v1/tournaments")
-            .then(response => response.json())
-            .then(data => console.log("hello:" + JSON.stringify(data)))
-            .catch(error => console.error(error));;
+    constructor(props) {
+        super(props);
+        this.state = {
+            tourneyData: [],
+        };
     }
-    render() {    
-    
+
+    makeCard() {
+        let jsonData = this.state.tourneyData;
         let cardStyle = {
             height: 440,
             width: 350,
+        };
+        for (let i = 0; i < jsonData.length; i++) {
+            console.log(jsonData);
+            console.log(jsonData[i].id);
+            console.log(jsonData[i].url);
+            console.log(jsonData[i].location);
+            console.log(jsonData[i].organizer);
+            console.log(jsonData[i].photoURL);
         }
+
+        let table = []
+        table.push(<div className="d-flex mb-5 justify-content-center">{children}</div>)
+
+        let children = []
+        // Outer loop to create parent
+        for (let i = 0; i < jsonData.length; i++) {
+            children.push(<div className="card mx-4" key={i} style={cardStyle}><img className="card-img-top" src={jsonData[i].photoURL} alt="Card image cap"/></div>)
+        }
+        return table
+    }
+
+    componentWillMount() {
+        fetch("https://smash.chenjosephzhang.me/v1/tournaments")
+            .then(response => response.json())
+            .then(data => this.state.tourneyData = data)
+            .catch(error => console.error(error));
+    }
+
+    render() {    
         return (
             <div>
                 <h1 className="text-center my-5">
                     Featured Tournaments
                 </h1>
-                <div className="d-flex mb-5 justify-content-center"> 
+                <div>
+                    {this.makeCard()}
+                </div>
+                {/* <div className="d-flex mb-5 justify-content-center"> 
                     <div className="card mx-4" style={cardStyle}>
                         <img className="card-img-top" src="https://smashgg.imgix.net/images/tournament/143919/image-b0e64c115be8f6274573d49974ff376f.jpg?auto=compress,format&w=300" alt="Card image cap"/>
                         <div className="card-body">
@@ -83,7 +115,7 @@ export default class Tournaments extends Component {
                             <a href="#" className="btn btn-success">Register</a>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         );
     }

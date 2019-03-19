@@ -74,10 +74,14 @@ func (ctx *TournamentContext) CreateGames(tid int64) error {
 		game.Victor = game.PlayerOne
 		game.Completed = true
 		game.Result = "Player one granted bye"
+		fmt.Println("creating game")
 		_, err := ctx.UserStore.CreateGame(tid, game)
 		if err != nil {
+			fmt.Println("error creating game")
+			fmt.Println(err)
 			return err
 		}
+		fmt.Println("game created")
 		roundOneGames = append(roundOneGames, game)
 	}
 
@@ -239,8 +243,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		insertTO := "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
-		_, err = ctx.UserStore.Client.Exec(insertTO, returnTournament.Organizer, returnTournament.ID, 1)
+		err = ctx.UserStore.RegisterTO(xUser.ID, returnTournament.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

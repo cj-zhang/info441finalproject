@@ -27,7 +27,7 @@ const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament
 const getLeastBusyTO = "select top(1) u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc"
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
-const createGame = "insert into games(tournament_id, player_one, player_two, victor, date_time, tournament_organizer_id, in_progress, completed, result) values (?,?,?,?,?,?,?,?,?)"
+const createGame = "insert into games(tournament_id, player_one, player_two, victor, date_time, tournament_organizer_id, in_progress, completed, result, next_game) values (?,?,?,?,?,?,?,?,?,?)"
 const updateGame = "update games set player_one=?, player_two=?, victor=?, date_time=?, in_progress=?, completed=?, result=? where id=?"
 const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
 const getStanding = "Select * from standings where u_id=? and tournament_id=?"
@@ -267,7 +267,7 @@ func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 
 // CreateGame creates and inserts a new game into the games table
 func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
-	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result)
+	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result, g.NextGame)
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +283,7 @@ func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
 func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
 	g := &Game{}
 	row := store.Client.QueryRow(getGame, gID)
-	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result); err != nil {
+	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
 		return nil, err
 	}
 	return g, nil
@@ -298,11 +298,12 @@ func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
 	}
 	for rows.Next() {
 		g := &Game{}
-		err = rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result)
-		if err != nil {
+		if err := rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
 			return nil, err
 		}
-		result = append(result, g)
+		if g.PlayerOne != 0 && g.PlayerTwo != 0 {
+			result = append(result, g)
+		}
 	}
 	return result, nil
 }

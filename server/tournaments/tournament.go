@@ -8,8 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/info441/assignments-kxuojom97/servers/gateway/models/users"
-	"github.com/info441/info441finalproject/server/gateway/models"
+	"info441finalproject/server/gateway/models"
 )
 
 //*TODO* change mysql game methods to include next game
@@ -117,12 +116,12 @@ func (ctx *TournamentContext) CreateBracket(tid int64, games []*models.Game) err
 }
 
 //GetUserFromHeader returns the user object from "X-User" header
-func GetUserFromHeader(r *http.Request) (*users.User, error) {
+func GetUserFromHeader(r *http.Request) (*models.User, error) {
 	xUser := r.Header.Get("X-User")
 	if len(xUser) == 0 {
 		return nil, fmt.Errorf("No User found")
 	}
-	user := new(users.User)
+	user := new(models.User)
 	err := json.Unmarshal([]byte(xUser), user)
 	if err != nil {
 		return nil, err

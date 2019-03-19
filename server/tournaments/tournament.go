@@ -239,7 +239,8 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = ctx.UserStore.RegisterTO(returnTournament.Organizer, returnTournament.ID)
+		insertTO := "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
+		_, err = ctx.UserStore.Client.Exec(insertTO, returnTournament.Organizer, returnTournament.ID, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

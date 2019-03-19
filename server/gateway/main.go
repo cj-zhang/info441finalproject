@@ -144,6 +144,8 @@ func main() {
 	tournamentProxy := &httputil.ReverseProxy{Director: director}
 	mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
 	mux.Handle("/v1/tournaments", tournamentProxy)
+	mux.Handle("/v1/tournaments/{tournamentID}", tournamentProxy)
+	mux.Handle("/v1/tournaments/{tournamentID}/", tournamentProxy)
 	mux.HandleFunc("/v1/users", ctx.UsersHandler)
 	mux.HandleFunc("/v1/users/", ctx.SpecificUserHandler)
 	mux.HandleFunc("/v1/sessions", ctx.SessionsHandler)

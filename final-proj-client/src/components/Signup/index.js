@@ -57,6 +57,7 @@ export default class SignUpView extends React.Component {
                 alert("Unsuccessful sign up attempt");
             }
         })
+        .then(() => this.props.history.push("/login"))
         .catch(function(error) {
             console.log('There has been a problem with your fetch operation: ', error.message);
         });

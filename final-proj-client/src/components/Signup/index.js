@@ -40,19 +40,19 @@ export default class SignUpView extends React.Component {
         evt.preventDefault();
         return fetch('https://smash.chenjosephzhang.me/v1/users', {
             method: "POST", 
-            mode: "no-cors", // no-cors, cors, *same-origin
-            credentials: "include", // include, *same-origin, omit
+            mode: "cors", // no-cors, cors, *same-origin
             headers: {
                 'Content-Type': 'application/json'
-                // "Content-Type": "application/x-www-form-urlencoded",
             },
             body: JSON.stringify(data), // body data type must match "Content-Type" header
         })
         .then(function(response) {
             console.log(response);
             if(response.status === 201) {
-                // successfulAuth();
                 console.log("SUCCESSFUL");
+                for(let header of response.headers){
+                    console.log("header: " + header);
+                 }
             } else {
                 alert("Unsuccessful sign up attempt");
             }

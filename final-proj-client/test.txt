@@ -14,3 +14,12 @@
     "lastName": "Xu",
     "photoURL": "https://www.gravatar.com/avatar/8550631b0d1aba19f0b070bcd054ccb8"
 }
+
+{
+	"ID " : 1,
+	"URL"  : "google.com",
+	"Location":  "seattle",
+	"Organizer": 1,
+	"PhotoURL": "https://www.gravatar.com/avatar/8550631b0d1aba19f0b070bcd054ccb8",
+	"Open": true
+}

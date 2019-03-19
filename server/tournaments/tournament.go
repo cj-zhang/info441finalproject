@@ -129,17 +129,9 @@ func GetUserFromHeader(r *http.Request) (*models.User, error) {
 	return user, err
 }
 
-// TourneyHandler handles requests for the '/smashqq/tournaments' resource
-// and '/smashqq/tournaments/{tournamentID}' resource
+// TourneyHandler handles requests for the '/v1/tournaments' resource
+// and '/v1/tournaments/{tournamentID}' resource
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
-	//Check if authenticated
-	xUser, err := GetUserFromHeader(r)
-	if err != nil {
-		fmt.Println(err.Error())
-		http.Error(w, err.Error(),
-			http.StatusUnauthorized)
-		return
-	}
 	if r.Method != http.MethodPost {
 		if path.Base(r.URL.String()) == "tournaments" && r.Method == http.MethodGet {
 			tournaments, err := ctx.UserStore.GetAllTournaments()
@@ -216,6 +208,14 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	} else {
+		//Check if authenticated
+		xUser, err := GetUserFromHeader(r)
+		if err != nil {
+			fmt.Println(err.Error())
+			http.Error(w, err.Error(),
+				http.StatusUnauthorized)
+			return
+		}
 		header := r.Header.Get("Content-Type")
 		if !strings.HasPrefix(header, "application/json") {
 			http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)

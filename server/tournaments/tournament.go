@@ -16,7 +16,7 @@ import (
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
-func GetTournamentIDFromURL(url string) (int, error) {
+func GetTournamentIDFromURL(r *http.Request) (int, error) {
 	// urlVar := path.Base(url)
 	// tid, err := strconv.Atoi(urlVar)
 	// if err != nil {
@@ -24,10 +24,10 @@ func GetTournamentIDFromURL(url string) (int, error) {
 	// }
 	// return tid, nil
 	queryID := r.URL.Query().Get("tid")
-	if query == "" {
+	if queryID == "" {
 		return 0, fmt.Errorf("Must supply tournament id")
 	}
-	q, err := strconv.Atoi(query)
+	q, err := strconv.Atoi(queryID)
 	if err != nil {
 		return 0, fmt.Errorf("Must supply valid tournament id")
 	}
@@ -155,7 +155,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			}
 			return
 		}
-		tid, err := GetTournamentIDFromURL(r.URL.String())
+		tid, err := GetTournamentIDFromURL(r)
 		if err != nil {
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
 			return
@@ -260,7 +260,7 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 			http.StatusUnauthorized)
 		return
 	}
-	tid, err := GetTournamentIDFromURL(r.URL.String())
+	tid, err := GetTournamentIDFromURL(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -352,7 +352,7 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 			http.StatusUnauthorized)
 		return
 	}
-	tid, err := GetTournamentIDFromURL(r.URL.String())
+	tid, err := GetTournamentIDFromURL(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -452,7 +452,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 			http.StatusUnauthorized)
 		return
 	}
-	tid, err := GetTournamentIDFromURL(r.URL.String())
+	tid, err := GetTournamentIDFromURL(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -587,7 +587,7 @@ func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Re
 			http.StatusUnauthorized)
 		return
 	}
-	tid, err := GetTournamentIDFromURL(r.URL.String())
+	tid, err := GetTournamentIDFromURL(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

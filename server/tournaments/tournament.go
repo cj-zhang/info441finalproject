@@ -24,10 +24,10 @@ func GetTournamentIDFromURL(r *http.Request) (int, error) {
 	// }
 	// return tid, nil
 	queryID := r.URL.Query().Get("tid")
-	if query == "" {
+	if queryID == "" {
 		return 0, fmt.Errorf("Must supply tournament id")
 	}
-	q, err := strconv.Atoi(query)
+	q, err := strconv.Atoi(queryID)
 	if err != nil {
 		return 0, fmt.Errorf("Must supply valid tournament id")
 	}

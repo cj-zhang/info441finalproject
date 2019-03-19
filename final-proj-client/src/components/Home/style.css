@@ -1,0 +1,22 @@
+.App {
+    text-align: center;
+  }
+  
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+    height: 80px;
+  }
+  
+  .App-intro {
+    font-size: large;
+  }
+  
+  .landing-title {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    color: white;
+  }
+  
+  .w-100 {
+    max-height: 500px !important;
+  }

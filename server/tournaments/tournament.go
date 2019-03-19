@@ -133,7 +133,7 @@ func GetUserFromHeader(r *http.Request) (*models.User, error) {
 // and '/smashqq/tournaments/{tournamentID}' resource
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
 	//Check if authenticated
-	_, err := GetUserFromHeader(r)
+	xUser, err := GetUserFromHeader(r)
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Error(w, err.Error(),
@@ -227,7 +227,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 				http.StatusBadRequest)
 			return
 		}
-		returnTournament, err := ctx.UserStore.CreateTournament(tournament, int64(0)) // *TODO change to user id later
+		returnTournament, err := ctx.UserStore.CreateTournament(tournament, xUser.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

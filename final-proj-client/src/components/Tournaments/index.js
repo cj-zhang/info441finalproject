@@ -26,13 +26,14 @@ export default class Tournaments extends Component {
         }
 
         let table = []
-        table.push(<div className="d-flex mb-5 justify-content-center">{children}</div>)
 
         let children = []
         // Outer loop to create parent
         for (let i = 0; i < jsonData.length; i++) {
-            children.push(<div className="card mx-4" key={i} style={cardStyle}><img className="card-img-top" src={jsonData[i].photoURL} alt="Card image cap"/></div>)
+            children.push(<div className="card mx-4" key={i} style={cardStyle}><img className="card-img-top" key={i} src={jsonData[i].photoURL} alt="Card image cap"/></div>)
         }
+        table.push(<div className="d-flex mb-5 justify-content-center">{children}</div>)
+
         return table
     }
 
@@ -43,14 +44,30 @@ export default class Tournaments extends Component {
             .catch(error => console.error(error));
     }
 
-    render() {    
+    render() {   
+        let cardStyle = {
+            height: 440,
+            width: 350,
+        }; 
         return (
             <div>
                 <h1 className="text-center my-5">
                     Featured Tournaments
                 </h1>
                 <div>
-                    {this.makeCard()}
+                    {this.state.tourneyData.map(tourney => {
+                        return  <div className="card mx-4" style={cardStyle}>
+                                    <img className="card-img-top" src={tourney.photoURL} alt="Card image cap"/>
+                                    <div key={tourney.id} className="card-body">
+                                        <h5 className="mb-1 card-title">{tourney.url}</h5>
+                                        <p className="mb-1 py-0 text-secondary">{tourney.location}</p>
+                                        <p className="card-text">The Twitch Rivals: The Division 2 Showdown is an online competition, split between Europe and North America, featuring 40 invited streamers (20 per region). </p>
+                                        <a href="#" className="btn btn-primary mr-3">Details</a>
+                                        <a href="#" className="btn btn-success">Register</a>
+                                    </div>
+                                </div>
+
+                    })}
                 </div>
                 {/* <div className="d-flex mb-5 justify-content-center"> 
                     <div className="card mx-4" style={cardStyle}>

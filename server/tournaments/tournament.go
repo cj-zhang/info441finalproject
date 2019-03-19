@@ -142,7 +142,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 	}
 	if r.Method != http.MethodPost {
 		if path.Base(r.URL.String()) == "tournaments" && r.Method == http.MethodGet {
-			tournaments, err = ctx.UserStore.GetPlayers(q, int64(tid))
+			tournaments, err = ctx.UserStore.GetAllTournaments()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

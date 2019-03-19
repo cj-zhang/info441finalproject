@@ -519,6 +519,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 		}
 		// If game is finished and game is not grands
 		if update.Completed == true && game.NextGame != 0 {
+			fmt.Println("Updating next game")
 			nextGameUpdate := new(models.GameUpdate)
 			nextGameUpdate.ID = game.NextGame
 			nextGame, err := ctx.UserStore.GetGame(game.NextGame)
@@ -532,7 +533,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				nextGameUpdate.PlayerTwo = game.Victor
 			}
 			nextGameUpdate.InProgress = false
-			nextGameUpdate.Completed = 
+			nextGameUpdate.Completed = false
 			nextGameUpdate.Result = ""
 			_, err = ctx.UserStore.ReportGame(update)
 			if err != nil {

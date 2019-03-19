@@ -240,6 +240,11 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		err = ctx.RegisterTO(returnTournament.Organizer, returnTournament.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(returnTournament); err != nil {

@@ -2,10 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"info441finalproject/server/gateway/handlers"
 	"info441finalproject/server/gateway/indexes"
-	"info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
 	"info441finalproject/server/gateway/sessions"
 	"log"
 	"net/http"
@@ -26,8 +27,8 @@ func failOnError(err error, msg string) {
 
 //main is the main entry point for the server
 func main() {
-	//summaryaddr := os.Getenv("SUMMARYADDR")
-	//msgaddrs := strings.Split(os.Getenv("MESSAGESADDR"), ",")
+	summaryAddr := os.Getenv("SUMMARYADDR")
+	messagingAddr := os.Getenv("MESSAGESADDR")
 	addr := os.Getenv("ADDR")
 	sessionkey := os.Getenv("SESSIONKEY")
 	redisaddr := os.Getenv("REDISADDR")
@@ -41,12 +42,12 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error: tlskey and tlscert env variables must be set")
 		os.Exit(1)
 	}
-	// if len(summaryaddr) == 0 {
-	// 	summaryaddr = "summary:80"
-	// }
-	// if len(msgaddrs) == 0 {
-	// 	msgaddrs = []string{"messaging:80"}
-	// }
+	if len(summaryaddr) == 0 {
+		summaryaddr = "summary:80"
+	}
+	if len(messagingAddr) == 0 {
+		messagingAddr = "messaging:80"
+	}
 
 	// create sessionStore through Redis
 	redisDb := redis.NewClient(&redis.Options{
@@ -63,7 +64,7 @@ func main() {
 		fmt.Printf("error pinging the db: %v\n", err)
 	}
 
-	userStore := &users.MySQLStore{
+	userStore := &models.MySQLStore{
 		Client: db,
 	}
 	defer db.Close()
@@ -140,7 +141,7 @@ func main() {
 	director := func(r *http.Request) {
 		//Check if authenticated
 		sessionState := new(handlers.SessionState)
-		sid, err := sessions.GetState(r, ctx.SigningKey, ctx.SessionStore, sessionState)
+		sid, err := sessions.GetState(r, ctx.SigningKey, ctx.SessStore, sessionState)
 		if sid != sessions.InvalidSessionID && err == nil {
 			user, err := json.Marshal(sessionState.User)
 			if err == nil {

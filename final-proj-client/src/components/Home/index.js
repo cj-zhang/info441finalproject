@@ -14,7 +14,7 @@ export default class Home extends Component {
                     <Col className="container title-container text-white" id="opaque">
                             <p className="smash-title">SMASH.QQ</p>
                             <h2 className="title-text">Find your local Super Smash Bros. Ultimate tournaments</h2>
-                            <h3 className="signuplink">Sign Up <Link to={"/login"} className="text-primary">Now</Link>!</h3>
+                            <h3 className="signuplink">Sign Up <Link to={"/signup"} className="text-primary">Now</Link>!</h3>
                     </Col>
                 </Row>
                 <Tournaments/>

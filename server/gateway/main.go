@@ -27,7 +27,7 @@ func failOnError(err error, msg string) {
 
 //main is the main entry point for the server
 func main() {
-	messagingAddr := os.Getenv("MESSAGESADDR")
+	tournamentAddr := os.Getenv("TOURNAMENTADDR")
 	addr := os.Getenv("ADDR")
 	sessionkey := os.Getenv("SESSIONKEY")
 	redisaddr := os.Getenv("REDISADDR")
@@ -40,9 +40,6 @@ func main() {
 	if len(tlskey) == 0 || len(tlscert) == 0 {
 		fmt.Fprintf(os.Stderr, "error: tlskey and tlscert env variables must be set")
 		os.Exit(1)
-	}
-	if len(messagingAddr) == 0 {
-		messagingAddr = "messaging:80"
 	}
 
 	// create sessionStore through Redis

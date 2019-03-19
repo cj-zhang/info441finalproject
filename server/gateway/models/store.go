@@ -35,6 +35,9 @@ type Store interface {
 	//Delete deletes the user with the given ID
 	Delete(id int64) error
 
+	// GetAllTournaments gets all of the tournaments
+	GetAllTournaments() ([]*Tournament, error)
+
 	// GetTournament gets the information for one tournament
 	GetTournament(id int64) (*Tournament, error)
 

@@ -13,6 +13,7 @@ const usernameSelect = "Select * From users Where username=?"
 const insertUser = "insert into users(email, pass_hash, username, first_name, last_name, photo_url) values (?,?,?,?,?,?)"
 const updateUser = "update users set first_name=?, last_name=? where id=?"
 const deleteUser = "delete from users where id=?"
+const getAllTournaments = "Select * From tournaments"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
 const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, open) values (?,?,?,?,?)"
@@ -118,6 +119,24 @@ func (store *MySQLStore) Delete(id int64) error {
 		return err
 	}
 	return nil
+}
+
+// GetAllTournaments gets all of the tournaments
+func (store *MySQLStore) GetAllTournaments() ([]*Tournament, error) {
+	var result []*Tournament
+	rows, err := store.Client.Query(getAllTournaments)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		t := &Tournament{}
+		err = rows.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.Open, &t.PhotoURL)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, t)
+	}
+	return result, nil
 }
 
 // GetTournament gets the information for one tournament

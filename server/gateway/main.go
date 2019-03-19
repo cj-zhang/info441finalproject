@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	"os"
 	"time"
 
@@ -28,7 +27,6 @@ func failOnError(err error, msg string) {
 
 //main is the main entry point for the server
 func main() {
-	summaryAddr := os.Getenv("SUMMARYADDR")
 	messagingAddr := os.Getenv("MESSAGESADDR")
 	addr := os.Getenv("ADDR")
 	sessionkey := os.Getenv("SESSIONKEY")
@@ -42,9 +40,6 @@ func main() {
 	if len(tlskey) == 0 || len(tlscert) == 0 {
 		fmt.Fprintf(os.Stderr, "error: tlskey and tlscert env variables must be set")
 		os.Exit(1)
-	}
-	if len(summaryaddr) == 0 {
-		summaryaddr = "summary:80"
 	}
 	if len(messagingAddr) == 0 {
 		messagingAddr = "messaging:80"
@@ -124,7 +119,7 @@ func main() {
 					fmt.Errorf("Error writing queue message to connections: %v", err)
 				}
 			} else {
-				err = ctx.SocketStore.WriteToConnections(message["userIDs"].([]int64), handlers.TextMessage, m.Body)
+				err = ctx.SocketStore.WriteToConnection(message["userIDs"].([]int64), handlers.TextMessage, m.Body)
 				if err != nil {
 					fmt.Errorf("Error writing queue message to connections: %v", err)
 				}
@@ -134,7 +129,6 @@ func main() {
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	mux := http.NewServeMux()
-	summaryProxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme: "http", Host: summaryAddr})
 	director := func(r *http.Request) {
 		//Check if authenticated
 		sessionState := new(handlers.SessionState)
@@ -152,7 +146,6 @@ func main() {
 	}
 	messagingProxy := &httputil.ReverseProxy{Director: director}
 	mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
-	mux.Handle("/v1/summary", summaryProxy)
 	mux.Handle("/v1/channels", messagingProxy)
 	mux.Handle("/v1/channels/", messagingProxy)
 	mux.Handle("/v1/channels/{channelID}/members", messagingProxy)

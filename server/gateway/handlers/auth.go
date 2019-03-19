@@ -227,7 +227,7 @@ func (ctx *HandlerContext) SessionsHandler(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "invalid credentials", http.StatusUnauthorized)
 			return
 		} else if err = u.Authenticate(creds.Password); err != nil {
-			http.Error(w, "user failed to authenticate", http.StatusUnauthorized)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		}
 		sessState := &SessionState{

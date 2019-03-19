@@ -38,7 +38,6 @@ create table if not exists standings (
     placing int not null,
     standing varchar(128) not null,
     FOREIGN KEY (u_id) REFERENCES users(id),
-    FOREIGN KEY (next_game) REFERENCES games(id),
     FOREIGN KEY (tournament_id) REFERENCES tournaments(id)
 );
 
@@ -54,7 +53,6 @@ create table if not exists games (
     completed boolean not null,
     result varchar(255) not null,
     next_game int,
-    FOREIGN KEY (bracket_id) REFERENCES brackets(id),
     FOREIGN KEY (tournament_organizer_id) REFERENCES tournament_organizers(u_id),
     FOREIGN KEY (player_one) REFERENCES players(u_id),
     FOREIGN KEY (player_two) REFERENCES players(u_id)

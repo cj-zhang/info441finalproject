@@ -76,7 +76,7 @@ func main() {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/tournaments", ctx.TourneyHandler)
-	mux.HandleFunc("/v1/tournaments/", ctx.TourneyHandler)
+	mux.HandleFunc("/v1/tournaments/{tournamentID}", ctx.TourneyHandler)
 	mux.HandleFunc("/v1/tournaments/{tournamentID}/players", ctx.PlayerHandler)
 	mux.HandleFunc("/v1/tournaments/{tournamentID}/organizers", ctx.OrganizerHandler)
 	mux.HandleFunc("/v1/tournaments/{tournamentID}/games", ctx.GamesHandler)

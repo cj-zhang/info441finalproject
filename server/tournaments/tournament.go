@@ -172,6 +172,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 					http.StatusInternalServerError)
 				return
 			}
+			return
 		} else if r.Method == http.MethodDelete {
 			err = ctx.UserStore.DeleteTournament(int64(tid))
 			if err != nil {

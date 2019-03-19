@@ -23,9 +23,9 @@ export default class Permanav extends Component {
 								<li className="nav-item dropdown">
 									<a className="nav-link" href="/tournaments">Tournaments</a>
 								</li>
-								<li className="nav-item">
+								{/* <li className="nav-item">
 									<a className="nav-link" href="/games">Games</a>
-								</li>
+								</li> */}
 								<li className="nav-item">
 									<a className="nav-link" href="/standings">Standings</a>
 								</li>

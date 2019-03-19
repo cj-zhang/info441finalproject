@@ -141,6 +141,19 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	if r.Method != http.MethodPost {
+		if path.Base(r.URL.String()) == "tournaments" && r.Method == http.MethodGet {
+			tournaments, err = ctx.UserStore.GetPlayers(q, int64(tid))
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Add("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if err := json.NewEncoder(w).Encode(tournaments); err != nil {
+				http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
+				return
+			}
+		}
 		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)

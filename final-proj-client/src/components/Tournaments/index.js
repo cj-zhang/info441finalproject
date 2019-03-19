@@ -11,11 +11,6 @@ export default class Tournaments extends Component {
             .then(data => console.log("hello:" + data))
             .catch(error => console.error(error));;
     }
-
-    
-    
-    
-
     render() {    
     
         let cardStyle = {

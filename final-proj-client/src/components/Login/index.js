@@ -25,32 +25,31 @@ export default class SignInView extends React.Component {
     //     console.log("successful signin");
     // }
     handleSignIn(evt) {
+        var data = {
+            "Email": this.state.email,
+            "Password": this.state.password
+        }
         evt.preventDefault();
-        return fetch('http://smash.chenjosephzhang.me/v1/sessions', {
+        return fetch('https://smash.chenjosephzhang.me/v1/sessions', {
             method: "POST", 
             mode: "cors", // no-cors, cors, *same-origin
-            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: "include", // include, *same-origin, omit
             headers: {
                 "Content-Type": "application/json",
                 // "Content-Type": "application/x-www-form-urlencoded",
             },
-            redirect: "follow", // manual, *follow, error
-            referrer: "no-referrer", // no-referrer, *client
-            body: {
-                "Email": this.state.email,
-                "Password": this.state.password
-            }, // body data type must match "Content-Type" header
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
         })
-        .then(response => response.status())
         .then(function(response) {
-            if(response === 201) {
-                // successfulAuth();
+            if(response.status === 201) {
                 console.log("SUCCESSFUL");
+                for(let header of response.headers){
+                    console.log("header: " + header);
+                 }
             } else {
                 alert("Unsuccessful log in attempt");
             }
         })
+        .then(() => this.props.history.push("/"))
         .catch(function(error) {
             console.log('There has been a problem with your fetch operation: ', error.message);
         });

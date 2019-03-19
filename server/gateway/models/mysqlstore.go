@@ -28,7 +28,7 @@ const getAllTOs = "Select id, email, username, pass_hash, first_name, last_name,
 const insertTO = "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
 const addOneBracketOverseenToTO = "update tournament_organizers set brackets_overseen = brackets_overseen + 1 where u_id=? and tournament_id=?"
 const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
-const getLeastBusyTO = "select top(1) u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc"
+const getLeastBusyTO = "select u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc limit 1"
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
 const getAllGames = "Select * From games where tournament_id=?"

@@ -129,8 +129,8 @@ func GetUserFromHeader(r *http.Request) (*models.User, error) {
 	return user, err
 }
 
-// TourneyHandler handles requests for the '/smashqq/tournaments' resource
-// and '/smashqq/tournaments/{tournamentID}' resource
+// TourneyHandler handles requests for the '/v1/tournaments' resource
+// and '/v1/tournaments/{tournamentID}' resource
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
 	//Check if authenticated
 	xUser, err := GetUserFromHeader(r)

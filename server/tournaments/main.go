@@ -76,11 +76,10 @@ func main() {
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/tournaments", ctx.TourneyHandler)
-	mux.HandleFunc("/v1/tournaments/{tournamentID}", ctx.TourneyHandler)
-	mux.HandleFunc("/v1/tournaments/{tournamentID}/players", ctx.PlayerHandler)
-	mux.HandleFunc("/v1/tournaments/{tournamentID}/organizers", ctx.OrganizerHandler)
-	mux.HandleFunc("/v1/tournaments/{tournamentID}/games", ctx.GamesHandler)
-	mux.HandleFunc("/v1/tournaments/{tournamentID}/standings", ctx.StandingsHandler)
+	mux.HandleFunc("/v1/tournaments/players", ctx.PlayerHandler)
+	mux.HandleFunc("/v1/tournaments/organizers", ctx.OrganizerHandler)
+	mux.HandleFunc("/v1/tournaments/games", ctx.GamesHandler)
+	mux.HandleFunc("/v1/tournaments/standings", ctx.StandingsHandler)
 	log.Printf("server is listening at %s...", tournamentAddr)
 	log.Fatal(http.ListenAndServe(tournamentAddr, mux))
 }

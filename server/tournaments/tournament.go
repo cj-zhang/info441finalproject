@@ -531,6 +531,9 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 			} else if nextGame.PlayerTwo == 0 {
 				nextGameUpdate.PlayerTwo = game.Victor
 			}
+			nextGameUpdate.InProgress = false
+			nextGameUpdate.Completed = 
+			nextGameUpdate.Result = ""
 			_, err = ctx.UserStore.ReportGame(update)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

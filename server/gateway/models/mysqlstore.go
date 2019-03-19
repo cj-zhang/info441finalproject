@@ -16,7 +16,7 @@ const deleteUser = "delete from users where id=?"
 const getAllTournaments = "Select * From tournaments"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
-const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, open) values (?,?,?,?,?)"
+const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, registration_open) values (?,?,?,?,?)"
 const updateTournament = "update tournaments set website=?, tournament_location=?, tournament_organizer_id=?, registration_open=?, photo_url=? where id=?"
 const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
 const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
@@ -130,7 +130,7 @@ func (store *MySQLStore) GetAllTournaments() ([]*Tournament, error) {
 	}
 	for rows.Next() {
 		t := &Tournament{}
-		err = rows.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.Open, &t.PhotoURL)
+		err = rows.Scan(&t.ID, &t.URL, &t.Location, &t.Organizer, &t.PhotoURL, &t.Open)
 		if err != nil {
 			return nil, err
 		}

@@ -13,8 +13,8 @@ create table if not exists tournaments (
     website varchar(2083),
     tournament_location varchar(255) not null,
     tournament_organizer_id int not null,
-    registration_open boolean,
-    photo_url varchar(2083) not null
+    photo_url varchar(2083) not null,
+    registration_open boolean
 );
 
 create table if not exists players (

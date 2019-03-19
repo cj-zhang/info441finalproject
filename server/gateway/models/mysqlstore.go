@@ -37,6 +37,7 @@ const getGames = "Select * From games where tournament_id=? limit ?"
 const getAllGames = "Select * From games where tournament_id=?"
 const createGame = "insert into games(tournament_id, player_one, player_two, victor, tournament_organizer_id, in_progress, completed, result, next_game) values (?,?,?,?,?,?,?,?,?)"
 const updateGame = "update games set player_one=?, player_two=?, victor=?, in_progress=?, completed=?, result=? where id=?"
+const updateNextGame = "update games set next_game=? where id=?"
 const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
 
 // MySQLStore implements the Store interface and holds a pointer to a db
@@ -370,6 +371,15 @@ func (store *MySQLStore) ReportGame(updates *GameUpdate) (*Game, error) {
 	}
 
 	return store.GetGame(updates.ID)
+}
+
+// UpdateNextGame updates the next game of a given game
+func (store *MySQLStore) UpdateNextGame(id int64, nextID int64) error {
+	_, err := store.Client.Exec(updateNextGame, nextID, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // UserIsTO checks if a given user is a tournament organizer for the given tournament

@@ -4,18 +4,11 @@ import "./style.css";
 
 export default class Tournaments extends Component {
     componentDidMount() {
-        fetch("https://smash.chenjosephzhang.me/v1/tournaments", {
-            mode: "no-cors",
-        })
-            .then(response => console.log(response))
-            .then(data => console.log("hello:" + data))
+        fetch("https://smash.chenjosephzhang.me/v1/tournaments")
+            .then(response => response.json())
+            .then(data => console.log("hello:" + JSON.stringify(data)))
             .catch(error => console.error(error));;
     }
-
-    
-    
-    
-
     render() {    
     
         let cardStyle = {

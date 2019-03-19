@@ -3,18 +3,20 @@ import { Link } from "react-router-dom";
 
 
 export default class SignUpView extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         errorMessage: undefined,
-    //         currentUser: undefined,
-    //         email: "",
-    //         password: "",
-    //         confirm: "",
-    //         displayName: "",
-    //         photoURL: ""
-    //     };
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+            errorMessage: undefined,
+            currentUser: undefined,
+            email: "",
+            password: "",
+            confirm: "",
+            displayName: "",
+            firstName: "",
+            lastName: "",
+            photoURL: ""
+        };
+    }
     // componentDidMount() {
     //     this.authUnsub = firebase.auth().onAuthStateChanged(user => {
     //         this.setState({currentUser: user});
@@ -23,27 +25,43 @@ export default class SignUpView extends React.Component {
     // componentWillUnmount() {
     //     this.authUnsub();
     // }
-    // handleSignUp(evt) {
-    //     if (this.state.password !== this.state.confirm) {
-    //         alert("Your passwords do not match");
-    //     }
-    //     evt.preventDefault();
-    //     if (this.state.displayName) {
-    //         this.setState({photoURL: "https://www.gravatar.com/avatar/" + md5(this.state.email.toLowerCase().trim()) + "?s=30"});
-    //         firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-    //             .then(user => {
-    //                 user.updateProfile({
-    //                     displayName: this.state.displayName,
-    //                     photoURL: this.state.photoURL
-    //                 })
-    //             })
-    //             .then(() => firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password))
-    //             .then(() => this.props.history.push("/channels/General"))
-    //             .catch(err => alert(err.message));
-    //     } else {
-    //         alert("Need a display name");
-    //     }
-    // }
+    handleSignUp(evt) {
+        if (this.state.password !== this.state.confirm) {
+            alert("Your passwords do not match");
+        } 
+        evt.preventDefault();
+        return fetch('http://smash.chenjosephzhang.me/v1/users', {
+            method: "POST", 
+            mode: "no-cors", // no-cors, cors, *same-origin
+            credentials: "include", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "application/json",
+                // "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: {
+                "email": this.state.email,
+                "password": this.state.password,
+                "passwordConf": this.state.confirm,
+                "userName": this.state.displayName,
+                "firstName": this.state.firstName,
+                "lastName": this.state.lastName,
+            }, // body data type must match "Content-Type" header
+        })
+        .then(response => response.status())
+        .then(function(response) {
+            console.log(response);
+            if(response === 201) {
+                // successfulAuth();
+                console.log("SUCCESSFUL");
+            } else {
+                alert("Unsuccessful sign up attempt");
+            }
+        })
+        .catch(function(error) {
+            console.log('There has been a problem with your fetch operation: ', error.message);
+        });
+    }
+            
     render() {
         let signupStyle = {
             width: "30%",
@@ -69,26 +87,42 @@ export default class SignUpView extends React.Component {
             <div className="container" style={signupStyle}>
                 <h1 style={titleStyle}>Sign Up</h1>
 
-                <form>
+                <form onSubmit={evt => this.handleSignUp(evt)}>
                     <div className="form-group">
                         <h4 style={labelStyle}>Email:</h4>
                         <input id="email" type="email" className="form-control"
-                            placeholder="enter your email address"/>
+                            placeholder="enter your email address"
+                            onInput={evt => this.setState({ email: evt.target.value })} />
                     </div>
                     <div className="form-group">
                         <h4 style={labelStyle}>Password:</h4>
                         <input id="password" type="password" className="form-control"
-                            placeholder="enter your password"/>
+                            placeholder="enter your password"
+                            onInput={evt => this.setState({ password: evt.target.value })} />
                     </div>
                     <div className="form-group">
                         <h4 style={labelStyle}>Confirm password:</h4>
                         <input id="confirm-password" type="password" className="form-control"
-                            placeholder="confirm password"/>
+                            placeholder="confirm password"
+                            onInput={evt => this.setState({ confirm: evt.target.value })} />
                     </div>
                     <div className="form-group">
-                        <h4 style={labelStyle}>Display name:</h4>
+                        <h4 style={labelStyle}>UserName:</h4>
                         <input id="display-name" type="display-name" className="form-control"
-                            placeholder="enter your display name"/>
+                            placeholder="enter your display name"
+                            onInput={evt => this.setState({ displayName: evt.target.value })} />
+                    </div>
+                    <div className="form-group">
+                        <h4 style={labelStyle}> First Name:</h4>
+                        <input id="first-name" type="first-name" className="form-control"
+                            placeholder="enter your first name"
+                            onInput={evt => this.setState({ firstName: evt.target.value })} />
+                    </div>
+                    <div className="form-group">
+                        <h4 style={labelStyle}>Last Name:</h4>
+                        <input id="last-name" type="last-name" className="form-control"
+                            placeholder="enter your last name"
+                            onInput={evt => this.setState({ lastName: evt.target.value })} />
                     </div>
                     <div className="last-row d-flex">
                         <div className="form-group">

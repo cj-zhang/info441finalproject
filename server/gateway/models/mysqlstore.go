@@ -297,7 +297,7 @@ func (store *MySQLStore) GetTOs(q int, tID int64) ([]*User, error) {
 func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 	var userID int64
 	row := store.Client.QueryRow(getLeastBusyTO, tID)
-	if err := row.Scan(userID); err != nil {
+	if err := row.Scan(&userID); err != nil {
 		return nil, err
 	}
 	return store.GetTO(userID, tID)

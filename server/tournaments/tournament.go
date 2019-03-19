@@ -106,10 +106,13 @@ func (ctx *TournamentContext) CreateBracket(tid int64, games []*models.Game) err
 				if err != nil {
 					return err
 				}
+				games[i].NextGame = nextGame.ID
+				ctx.UserStore.UpdateNextGame(games[i].ID, nextGame.ID)
 			} else {
+				games[i].NextGame = nextGame.ID
+				ctx.UserStore.UpdateNextGame(games[i].ID, nextGame.ID)
 				nextRoundGames = append(nextRoundGames, nextGame)
 			}
-			games[i].NextGame = nextGame.ID
 		}
 
 		// if odd number of gaes

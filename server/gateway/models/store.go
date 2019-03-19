@@ -89,6 +89,9 @@ type Store interface {
 	// ReportGame applies given updates to a game
 	ReportGame(updates *GameUpdate) (*Game, error)
 
+	// UpdateNextGame updates the next game of a given game
+	UpdateNextGame(id int64, nextID int64) error
+
 	// UserIsTO checks if a given user is a tournament organizer for the given tournament
 	UserIsTO(id int64, tID int64) bool
 }

@@ -35,6 +35,7 @@
 
 .mainjumbotron {
   background-image: url("./img/smash_banner_background.png");
+<<<<<<< HEAD
   /* Set rules to fill background */
   max-height: 500px;
   min-height: 500px;
@@ -43,4 +44,13 @@
   width: 100%;
   height: auto;
   background-size: cover;
+=======
+  font-size: 120px;
+  width: 100%;
+}
+
+#opaque {
+  background: rgba(0,0,0,.5);
+  width: 100%
+>>>>>>> master
 }

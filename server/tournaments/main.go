@@ -79,7 +79,6 @@ func main() {
 	mux.HandleFunc("/v1/tournaments/players", ctx.PlayerHandler)
 	mux.HandleFunc("/v1/tournaments/organizers", ctx.OrganizerHandler)
 	mux.HandleFunc("/v1/tournaments/games", ctx.GamesHandler)
-	mux.HandleFunc("/v1/tournaments/standings", ctx.StandingsHandler)
 	log.Printf("server is listening at %s...", tournamentAddr)
 	log.Fatal(http.ListenAndServe(tournamentAddr, mux))
 }

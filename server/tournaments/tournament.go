@@ -11,8 +11,7 @@ import (
 	"info441finalproject/server/gateway/models"
 )
 
-//*TODO* change mysql game methods to include next game
-// mysql get games should only return games with both players not nil
+//*TODO* Create stnadings whenever games are created and update standings whenver games finished
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
@@ -75,10 +74,14 @@ func (ctx *TournamentContext) CreateGames(tid int64) error {
 		game.Victor = game.PlayerOne
 		game.Completed = true
 		game.Result = "Player one granted bye"
+		fmt.Println("creating game")
 		_, err := ctx.UserStore.CreateGame(tid, game)
 		if err != nil {
+			fmt.Println("error creating game")
+			fmt.Println(err)
 			return err
 		}
+		fmt.Println("game created")
 		roundOneGames = append(roundOneGames, game)
 	}
 
@@ -236,6 +239,11 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		returnTournament, err := ctx.UserStore.CreateTournament(tournament, xUser.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = ctx.UserStore.RegisterTO(xUser.ID, returnTournament.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -572,83 +580,6 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 		// 	}
 		// 	w.WriteHeader(http.StatusOK)
 		// 	w.Write([]byte("Game deleted"))
-	} else {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-}
-
-// StandingsHandler handles requests for the '/smashqq/tournaments/standings' resource
-func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Request) {
-	//Check if authenticated
-	_, err := GetUserFromHeader(r)
-	if err != nil {
-		fmt.Println(err.Error())
-		http.Error(w, err.Error(),
-			http.StatusUnauthorized)
-		return
-	}
-	tid, err := GetTournamentIDFromURL(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if r.Method == http.MethodGet {
-		var standings interface{}
-		queryID := r.URL.Query().Get("id")
-		if queryID != "" {
-			uid, err := strconv.Atoi(queryID)
-			if err != nil {
-				http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
-				return
-			}
-			standings, err = ctx.UserStore.GetStanding(int64(uid), int64(tid))
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		} else {
-			query := r.URL.Query().Get("q")
-			if query == "" {
-				http.Error(w, "Must supply query value", http.StatusBadRequest)
-				return
-			}
-			q, err := strconv.Atoi(query)
-			if err != nil {
-				http.Error(w, "Must supply a valid query", http.StatusBadRequest)
-				return
-			}
-			standings, err = ctx.UserStore.GetStandings(q, int64(tid))
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(standings); err != nil {
-			http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err),
-				http.StatusInternalServerError)
-			return
-		}
-		// } else if r.Method == http.MethodPatch {
-		// 	header := r.Header.Get("Content-Type")
-		// 	if !strings.HasPrefix(header, "application/json") {
-		// 		http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
-		// 		return
-		// 	}
-		// 	update := new(models.StandingUpdate)
-		// 	if err := json.NewDecoder(r.Body).Decode(update); err != nil {
-		// 		http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
-		// 			http.StatusBadRequest)
-		// 		return
-		// 	}
-		// 	err := ctx.UserStore.Update(update)
-		// 	if err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
-		// 	w.WriteHeader(http.StatusOK)
-		// 	w.Write([]byte("Standings updated"))
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}

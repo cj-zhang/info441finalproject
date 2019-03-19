@@ -19,12 +19,14 @@ type CorsMiddleWare struct {
 }
 
 func (c *CorsMiddleWare) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(headerAccessControlAllowOrigin, allowOriginValue)
+	w.Header().Set(headerAccessControlAllowMethods, allowMethodsValue)
+	w.Header().Set(headerAccessControlAllowHeaders, allowHeadersValue)
+	w.Header().Set(headerAccessControlExposeHeaders, exposeHeadersValue)
+	w.Header().Set(headerAccessControlMaxAge, controlMaxAgeValue)
 	if r.Method == http.MethodOptions {
-		w.Header().Set(headerAccessControlAllowOrigin, allowOriginValue)
-		w.Header().Set(headerAccessControlAllowMethods, allowMethodsValue)
-		w.Header().Set(headerAccessControlAllowHeaders, allowHeadersValue)
-		w.Header().Set(headerAccessControlExposeHeaders, exposeHeadersValue)
-		w.Header().Set(headerAccessControlMaxAge, controlMaxAgeValue)
+		w.WriteHeader(http.StatusOK)
+	} else {
+		c.Handler.ServeHTTP(w, r)
 	}
-	c.Handler.ServeHTTP(w, r)
 }

@@ -305,7 +305,7 @@ func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 
 // CreateGame creates and inserts a new game into the games table
 func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
-	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result, g.NextGame)
+	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, time.Now(), g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result, g.NextGame)
 	if err != nil {
 		return nil, err
 	}
@@ -321,7 +321,7 @@ func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
 func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
 	g := &Game{}
 	row := store.Client.QueryRow(getGame, gID)
-	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
+	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, time.Now(), &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
 		return nil, err
 	}
 	return g, nil
@@ -355,7 +355,7 @@ func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
 
 // ReportGame applies given updates to a game
 func (store *MySQLStore) ReportGame(updates *GameUpdate) (*Game, error) {
-	_, err := store.Client.Exec(updateGame, updates.PlayerOne, updates.PlayerTwo, updates.Victor, updates.DateTime, updates.InProgress, updates.Completed, updates.Result, updates.ID)
+	_, err := store.Client.Exec(updateGame, updates.PlayerOne, updates.PlayerTwo, updates.Victor, time.Now(), updates.InProgress, updates.Completed, updates.Result, updates.ID)
 	if err != nil {
 		return nil, err
 	}

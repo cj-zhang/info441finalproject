@@ -3,29 +3,40 @@ import "./style.css";
 
 
 export default class Tournaments extends Component {
-    getTournaments(url) {
-        // Default options are marked with *
-        return fetch(url, {
-            method: "GET", // *GET, POST, PUT, DELETE, etc.
-            mode: "no-cors", // no-cors, cors, *same-origin
-            cache: "default", // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: "same-origin", // include, *same-origin, omit
+    componentDidMount() {
+        fetch("https://smash.chenjosephzhang.me/v1/tournaments", {
+            mode: "no-cors",
         })
-        .then(response => response.json()); // parses JSON response into native Javascript objects 
+            .then(response => console.log(response))
+            .then(data => console.log("hello:" + data))
+            .catch(error => console.error(error));;
     }
 
     
-
+    
     
 
     render() {
-        this.getTournaments("https://smash.chenjosephzhang.me/v1/tournaments")
-        .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-        .catch(error => console.error(error));
+        let imgUrl = "https://smashgg.imgix.net/images/tournament/143919/image-b0e64c115be8f6274573d49974ff376f.jpg?auto=compress,format&w=300";
+    
+    
+        let cardStyle = {
+            width: "18rem",
+        }
         return (
-            <h1>
-                Tournament
-            </h1>
+            <div>
+                <h1 className="text-center mt-5">
+                    Tournaments
+                </h1>
+                <div className="card mx-3" style={cardStyle}>
+                    <img class="card-img-top" src="https://smashgg.imgix.net/images/tournament/143919/image-b0e64c115be8f6274573d49974ff376f.jpg?auto=compress,format&w=300" alt="Card image cap"/>
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
         );
     }
 }

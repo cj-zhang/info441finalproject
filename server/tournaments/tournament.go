@@ -16,12 +16,6 @@ import (
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
 func GetTournamentIDFromURL(r *http.Request) (int, error) {
-	// urlVar := path.Base(url)
-	// tid, err := strconv.Atoi(urlVar)
-	// if err != nil {
-	// 	return 0, err
-	// }
-	// return tid, nil
 	queryID := r.URL.Query().Get("tid")
 	if queryID == "" {
 		return 0, fmt.Errorf("Must supply tournament id")
@@ -503,25 +497,6 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.StatusInternalServerError)
 			return
 		}
-		// } else if r.Method == http.MethodPost {
-		// 	header := r.Header.Get("Content-Type")
-		// 	if !strings.HasPrefix(header, "application/json") {
-		// 		http.Error(w, "Request body must in JSON", http.StatusUnsupportedMediaType)
-		// 		return
-		// 	}
-		// 	game := new(models.Game)
-		// 	if err := json.NewDecoder(r.Body).Decode(game); err != nil {
-		// 		http.Error(w, fmt.Sprintf("error decoding JSON: %v", err),
-		// 			http.StatusBadRequest)
-		// 		return
-		// 	}
-		// 	err := ctx.UserStore.CreateGame(game, tid)
-		// 	if err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
-		// 	w.WriteHeader(http.StatusCreated)
-		// 	w.Write([]byte("Game Created"))
 	} else if r.Method == http.MethodPatch {
 		header := r.Header.Get("Content-Type")
 		if !strings.HasPrefix(header, "application/json") {
@@ -566,20 +541,6 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.StatusInternalServerError)
 			return
 		}
-		// } else if r.Method == http.MethodDelete {
-		// 	queryID := r.URL.Query().Get("id")
-		// 	gid, err := strconv.Atoi(queryID)
-		// 	if err != nil {
-		// 		http.Error(w, "Must supply a valid game ID", http.StatusBadRequest)
-		// 		return
-		// 	}
-		// 	err = ctx.UserStore.DeleteGame(gid)
-		// 	if err != nil {
-		// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 		return
-		// 	}
-		// 	w.WriteHeader(http.StatusOK)
-		// 	w.Write([]byte("Game deleted"))
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}

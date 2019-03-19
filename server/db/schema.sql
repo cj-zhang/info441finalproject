@@ -47,15 +47,12 @@ create table if not exists games (
     player_one int not null,
     player_two int not null,
     victor int, 
-    date_time datetime not null, 
     tournament_organizer_id int not null,
     in_progress boolean not null,
     completed boolean not null,
     result varchar(255) not null,
     next_game int,
-    FOREIGN KEY (tournament_organizer_id) REFERENCES tournament_organizers(u_id),
-    FOREIGN KEY (player_one) REFERENCES players(u_id),
-    FOREIGN KEY (player_two) REFERENCES players(u_id)
+    FOREIGN KEY (tournament_organizer_id) REFERENCES tournament_organizers(u_id)
 );
 
 -- create table if not exists single_tournament_users (

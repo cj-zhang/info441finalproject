@@ -38,7 +38,7 @@ docker run -d \
 --network smashgg \
 rabbitmq:3-management
 
-sleep 10
+sleep 15
 docker run -d \
 --name smash \
 --network smashgg \

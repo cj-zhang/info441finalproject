@@ -540,9 +540,9 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			var queueMessage map[string]interface{}
+			queueMessage := make(map[string]interface{})
 			queueMessage["type"] = "matched-created"
-			queueMessage["message"] = message
+			queueMessage["message"] = "your next match has been scheduled"
 			queueMessage["userIDs"] = game.Victor
 			queueBody, err := json.Marshal(queueMessage)
 			if err != nil {
@@ -562,7 +562,7 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.Error(w, "Error publishing to queue", http.StatusInternalServerError)
 				return
 			}
-			log.Printf(" [x] Sent %s", body)
+			log.Printf(" [x] Sent %s", queueBody)
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

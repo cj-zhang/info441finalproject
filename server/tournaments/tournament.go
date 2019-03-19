@@ -11,8 +11,7 @@ import (
 	"info441finalproject/server/gateway/models"
 )
 
-//*TODO* change mysql game methods to include next game
-// mysql get games should only return games with both players not nil
+//*TODO* Create stnadings whenever games are created and update standings whenver games finished
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
@@ -236,6 +235,11 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		returnTournament, err := ctx.UserStore.CreateTournament(tournament, xUser.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = ctx.RegisterTO(returnTournament.Organizer, returnTournament.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

@@ -11,8 +11,7 @@ import (
 	"info441finalproject/server/gateway/models"
 )
 
-//*TODO* change mysql game methods to include next game
-// mysql get games should only return games with both players not nil
+//*TODO* Create stnadings whenever games are created and update standings whenver games finished
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url

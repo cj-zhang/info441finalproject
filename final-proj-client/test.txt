@@ -23,3 +23,66 @@
 	"PhotoURL": "https://www.gravatar.com/avatar/8550631b0d1aba19f0b070bcd054ccb8",
 	"Open": true
 }
+
+{
+	"Email" :       "tomtom@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "tomias",
+	"FirstName"   : "Tommy",
+	"LastName"   :  "Dobrel"
+}
+
+{
+	"Email" :       "hahhah@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "hahhae",
+	"FirstName"   : "heavy",
+	"LastName"   :  "boseph"
+}
+
+{
+	"Email" :       "bruhbruh@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "mistaguy",
+	"FirstName"   : "mistamista",
+	"LastName"   :  "getmeoutofhere"
+}
+
+{
+	"Email" :       "forbidenfruit@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "tspin",
+	"FirstName"   : "tspin",
+	"LastName"   :  "technique"
+}
+
+{
+	"Email" :       "nairo@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "nairothebest",
+	"FirstName"   : "ganon",
+	"LastName"   :  "dorf"
+}
+
+{
+	"Email" :       "salem@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "salem",
+	"FirstName"   : "years",
+	"LastName"   :  "of research"
+}
+
+{
+	"Email" :       "moonfall@uw.edu",
+	"Password"   :  "fallfall",
+	"PasswordConf" :"fallfall",
+	"UserName"    : "tweek",
+	"FirstName"   : "flat",
+	"LastName"   :  "hair"
+}

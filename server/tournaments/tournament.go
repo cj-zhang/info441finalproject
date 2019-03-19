@@ -239,7 +239,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = ctx.RegisterTO(returnTournament.Organizer, returnTournament.ID)
+		err = ctx.UserStore.RegisterTO(returnTournament.Organizer, returnTournament.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

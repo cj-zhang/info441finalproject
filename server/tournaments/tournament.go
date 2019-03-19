@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/info441/assignments-kxuojom97/servers/gateway/models/users"
 	"github.com/info441/info441finalproject/server/gateway/models"
 )
 
@@ -115,12 +116,31 @@ func (ctx *TournamentContext) CreateBracket(tid int64, games []*models.Game) err
 	return nil
 }
 
+//GetUserFromHeader returns the user object from "X-User" header
+func GetUserFromHeader(r *http.Request) (*users.User, error) {
+	xUser := r.Header.Get("X-User")
+	if len(xUser) == 0 {
+		return nil, fmt.Errorf("No User found")
+	}
+	user := new(users.User)
+	err := json.Unmarshal([]byte(xUser), user)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
+}
+
 // TourneyHandler handles requests for the '/smashqq/tournaments' resource
 // and '/smashqq/tournaments/{tournamentID}' resource
-// *TODO* maybe add update method?
 func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Request) {
-	// *TODO*
-	// Check if authenticated
+	//Check if authenticated
+	_, err := GetUserFromHeader(r)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(),
+			http.StatusUnauthorized)
+		return
+	}
 	if r.Method != http.MethodPost {
 		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
@@ -212,9 +232,14 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 // PlayerHandler handles requests for the '/smashqq/tournaments/{tournamentID}/players' resource
 // *TODO* re-evaluate if getting a single player is necessary or just return all players
 func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Request) {
-	// *TODO*
-	// Check if authenticated
-	//
+	//Check if authenticated
+	_, err := GetUserFromHeader(r)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(),
+			http.StatusUnauthorized)
+		return
+	}
 	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
@@ -299,9 +324,14 @@ func (ctx *TournamentContext) PlayerHandler(w http.ResponseWriter, r *http.Reque
 
 // OrganizerHandler handles requests for the '/smashqq/tournaments/{tournamentID}/organizers' resource
 func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Request) {
-	// *TODO*
-	// Check if authenticated
-	//
+	//Check if authenticated
+	xUser, err := GetUserFromHeader(r)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(),
+			http.StatusUnauthorized)
+		return
+	}
 	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
@@ -350,10 +380,10 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 			return
 		}
 	} else if r.Method == http.MethodPost {
-		// User must be a TO to access
-		// *TODO*
-		// Check is user is TO
-		//
+		if ctx.UserStore.UserIsTO(xUser.ID, int64(tid)) != true {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
 		oid, err := strconv.Atoi(queryID)
 		if err != nil {
 			http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
@@ -367,10 +397,10 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte("TO registered"))
 	} else if r.Method == http.MethodDelete {
-		// User must be a TO to access
-		// *TODO*
-		// Check is user is TO
-		//
+		if ctx.UserStore.UserIsTO(xUser.ID, int64(tid)) != true {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
 		if queryID == "" {
 			http.Error(w, "Must supply user ID", http.StatusBadRequest)
 			return
@@ -394,9 +424,14 @@ func (ctx *TournamentContext) OrganizerHandler(w http.ResponseWriter, r *http.Re
 
 // GamesHandler handles requests for the '/smashqq/tournaments/{tournamentID}/games' resource
 func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Request) {
-	// *TODO*
-	// Check if authenticated
-	//
+	//Check if authenticated
+	_, err := GetUserFromHeader(r)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(),
+			http.StatusUnauthorized)
+		return
+	}
 	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)
@@ -524,9 +559,14 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 
 // StandingsHandler handles requests for the '/smashqq/tournaments/{tournamentID}/standings' resource
 func (ctx *TournamentContext) StandingsHandler(w http.ResponseWriter, r *http.Request) {
-	// *TODO*
-	// Check if authenticated
-	//
+	//Check if authenticated
+	_, err := GetUserFromHeader(r)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(),
+			http.StatusUnauthorized)
+		return
+	}
 	tid, err := GetTournamentIDFromURL(path.Dir(r.URL.String()))
 	if err != nil {
 		http.Error(w, "Must supply a valid ID", http.StatusBadRequest)

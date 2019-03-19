@@ -4,7 +4,7 @@ import classnames from "classnames";
 import Header from "./Header";
 import Footer from "./Footer";
 
-import "/style.css";
+import "./style.css";
 
 export default class Layout extends Component {
 	render() {

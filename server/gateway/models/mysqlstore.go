@@ -16,10 +16,13 @@ const deleteUser = "delete from users where id=?"
 const getAllTournaments = "Select * From tournaments"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
+const deleteTournamentGames = "delete from games where tournament_id=?"
+const deleteTournamentTOs = "delete from tournament_organizers where tournament_id=?"
+const deleteTournamentPlayers = "delete from players where tournament_id=?"
 const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, registration_open) values (?,?,?,?,?)"
 const updateTournament = "update tournaments set website=?, tournament_location=?, tournament_organizer_id=?, registration_open=?, photo_url=? where id=?"
 const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
-const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
+const deletePlayer = "delete from players Where u_id=? and tournament_id=?"
 const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
 const getAllPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=?"
 const getTO = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.u_id=? and t.tournament_id=?"
@@ -27,17 +30,14 @@ const getTOs = "Select id, email, username, pass_hash, first_name, last_name, ph
 const getAllTOs = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.tournament_id=?"
 const insertTO = "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
 const addOneBracketOverseenToTO = "update tournament_organizers set brackets_overseen = brackets_overseen + 1 where u_id=? and tournament_id=?"
-const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
-const getLeastBusyTO = "select top(1) u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc"
+const deleteTO = "delete From tournament_organizers Where u_id=? and tournament_id=?"
+const getLeastBusyTO = "select u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc limit 1"
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
 const getAllGames = "Select * From games where tournament_id=?"
-const createGame = "insert into games(tournament_id, player_one, player_two, victor, date_time, tournament_organizer_id, in_progress, completed, result, next_game) values (?,?,?,?,?,?,?,?,?,?)"
-const updateGame = "update games set player_one=?, player_two=?, victor=?, date_time=?, in_progress=?, completed=?, result=? where id=?"
+const createGame = "insert into games(tournament_id, player_one, player_two, victor, tournament_organizer_id, in_progress, completed, result, next_game) values (?,?,?,?,?,?,?,?,?)"
+const updateGame = "update games set player_one=?, player_two=?, victor=?, in_progress=?, completed=?, result=? where id=?"
 const checkIfTO = "Select brackets_overseen from tournament_organizers where u_id=? and tournament_id=?"
-const getStanding = "Select * from standings where u_id=? and tournament_id=?"
-const getStandings = "Select * from standings where tournament_id=? limit ?"
-const getAllStandings = "Select * from standings where tournament_id=?"
 
 // MySQLStore implements the Store interface and holds a pointer to a db
 type MySQLStore struct {
@@ -155,9 +155,21 @@ func (store *MySQLStore) GetTournament(id int64) (*Tournament, error) {
 	return t, nil
 }
 
-// DeleteTournament deletes the tournament with the given ID
+// DeleteTournament deletes the tournament and all its daa with the given ID
 func (store *MySQLStore) DeleteTournament(id int64) error {
-	_, err := store.Client.Exec(deleteTournament, id)
+	_, err := store.Client.Exec(deleteTournamentGames, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournamentPlayers, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournamentTOs, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournament, id)
 	if err != nil {
 		return err
 	}
@@ -297,7 +309,7 @@ func (store *MySQLStore) GetTOs(q int, tID int64) ([]*User, error) {
 func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 	var userID int64
 	row := store.Client.QueryRow(getLeastBusyTO, tID)
-	if err := row.Scan(userID); err != nil {
+	if err := row.Scan(&userID); err != nil {
 		return nil, err
 	}
 	return store.GetTO(userID, tID)
@@ -305,7 +317,7 @@ func (store *MySQLStore) GetLeastBusyTO(tID int64) (*User, error) {
 
 // CreateGame creates and inserts a new game into the games table
 func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
-	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.DateTime, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result, g.NextGame)
+	res, err := store.Client.Exec(createGame, tID, g.PlayerOne, g.PlayerTwo, g.Victor, g.TournamentOrganizerID, g.InProgress, g.Completed, g.Result, g.NextGame)
 	if err != nil {
 		return nil, err
 	}
@@ -321,7 +333,7 @@ func (store *MySQLStore) CreateGame(tID int64, g *Game) (*Game, error) {
 func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
 	g := &Game{}
 	row := store.Client.QueryRow(getGame, gID)
-	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
+	if err := row.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
 		return nil, err
 	}
 	return g, nil
@@ -329,7 +341,6 @@ func (store *MySQLStore) GetGame(gID int64) (*Game, error) {
 
 // GetGames gets the information for a given amount of games from the games table
 func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
-
 	var result []*Game
 	var rows *sql.Rows
 	var err error
@@ -343,19 +354,17 @@ func (store *MySQLStore) GetGames(q int, tID int64) ([]*Game, error) {
 	}
 	for rows.Next() {
 		g := &Game{}
-		if err := rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.DateTime, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
+		if err := rows.Scan(&g.ID, &g.TournamentID, &g.PlayerOne, &g.PlayerTwo, &g.Victor, &g.TournamentOrganizerID, &g.InProgress, &g.Completed, &g.Result, &g.NextGame); err != nil {
 			return nil, err
 		}
-		if g.PlayerOne != 0 && g.PlayerTwo != 0 {
-			result = append(result, g)
-		}
+		result = append(result, g)
 	}
 	return result, nil
 }
 
 // ReportGame applies given updates to a game
 func (store *MySQLStore) ReportGame(updates *GameUpdate) (*Game, error) {
-	_, err := store.Client.Exec(updateGame, updates.PlayerOne, updates.PlayerTwo, updates.Victor, updates.DateTime, updates.InProgress, updates.Completed, updates.Result, updates.ID)
+	_, err := store.Client.Exec(updateGame, updates.PlayerOne, updates.PlayerTwo, updates.Victor, updates.InProgress, updates.Completed, updates.Result, updates.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -369,38 +378,4 @@ func (store *MySQLStore) UserIsTO(id int64, tID int64) bool {
 	row := store.Client.QueryRow(checkIfTO, id, tID)
 	err := row.Scan(&bracketsOverseen)
 	return (err == nil && err != sql.ErrNoRows)
-}
-
-// GetStanding gets a single standing for the given user at a given tournament
-func (store *MySQLStore) GetStanding(id int64, tID int64) (*Standing, error) {
-	s := &Standing{}
-	row := store.Client.QueryRow(getStanding, id, tID)
-	if err := row.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
-		return nil, err
-	}
-	return s, nil
-
-}
-
-// GetStandings gets the standings associated with a given tournament
-func (store *MySQLStore) GetStandings(q int, tID int64) ([]*Standing, error) {
-	var result []*Standing
-	var rows *sql.Rows
-	var err error
-	if q == 0 {
-		rows, err = store.Client.Query(getAllStandings, tID)
-	} else {
-		rows, err = store.Client.Query(getStandings, tID, q)
-	}
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		s := &Standing{}
-		if err = rows.Scan(&s.UserID, &s.TournamentID, &s.Placing, &s.Standing); err != nil {
-			return nil, err
-		}
-		result = append(result, s)
-	}
-	return result, nil
 }

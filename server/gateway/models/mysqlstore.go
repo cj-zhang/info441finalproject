@@ -23,7 +23,8 @@ const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
 const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
 const getTO = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.u_id=? and t.tournament_id=?"
 const getTOs = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.tournament_id=? limit ?"
-const insertTO = "insert into tournament_organizers(u_id, tournament_id) values (?,?)"
+const insertTO = "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
+const addOneBracketOverseenToTO = "update tournament_organizers set brackets_overseen = brackets_overseen + 1 where u_id=? and tournament_id=?"
 const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
 const getLeastBusyTO = "select top(1) u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc"
 const getGame = "Select * From games where id=?"
@@ -229,11 +230,13 @@ func (store *MySQLStore) RemovePlayer(id int64, tID int64) error {
 
 // RegisterTO inserts a new TO into the TO table
 func (store *MySQLStore) RegisterTO(id int64, tID int64) error {
-	_, err := store.Client.Exec(insertTO, id, tID)
+	_, err := store.GetTO(id, tID)
 	if err != nil {
-		return err
+		_, err = store.Client.Exec(addOneBracketOverseenToTO, id, tID)
+	} else {
+		_, err = store.Client.Exec(insertTO, id, tID, 1)
 	}
-	return nil
+	return err
 }
 
 // RemoveTO deletes a TO from the TO table

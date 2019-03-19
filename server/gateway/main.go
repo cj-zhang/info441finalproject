@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"info441finalproject/server/gateway/handlers"
 	"info441finalproject/server/gateway/indexes"
-	"info441finalproject/server/gateway/models/users"
+	"info441finalproject/server/gateway/models"
 	"info441finalproject/server/gateway/sessions"
 	"log"
 	"net/http"
@@ -61,7 +61,7 @@ func main() {
 		fmt.Printf("error pinging the db: %v\n", err)
 	}
 
-	userStore := &users.MySQLStore{
+	userStore := &models.MySQLStore{
 		Client: db,
 	}
 	defer db.Close()

@@ -140,16 +140,13 @@ func main() {
 				r.Header.Add("X-User", string(user)) // User is authenticated
 			}
 		}
-		r.Host = messagingAddr
-		r.URL.Host = messagingAddr
+		r.Host = tournamentAddr
+		r.URL.Host = tournamentAddr
 		r.URL.Scheme = "http"
 	}
-	messagingProxy := &httputil.ReverseProxy{Director: director}
+	tournamentProxy := &httputil.ReverseProxy{Director: director}
 	mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
-	mux.Handle("/v1/channels", messagingProxy)
-	mux.Handle("/v1/channels/", messagingProxy)
-	mux.Handle("/v1/channels/{channelID}/members", messagingProxy)
-	mux.Handle("/v1/messages/", messagingProxy)
+	mux.Handle("/v1/tournaments", tournamentProxy)
 	mux.HandleFunc("/v1/users", ctx.UsersHandler)
 	mux.HandleFunc("/v1/users/", ctx.SpecificUserHandler)
 	mux.HandleFunc("/v1/sessions", ctx.SessionsHandler)

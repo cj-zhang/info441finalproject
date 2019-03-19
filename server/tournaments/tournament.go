@@ -153,6 +153,7 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 				http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
 				return
 			}
+			return
 		}
 		tid, err := GetTournamentIDFromURL(r.URL.String())
 		if err != nil {
@@ -172,7 +173,6 @@ func (ctx *TournamentContext) TourneyHandler(w http.ResponseWriter, r *http.Requ
 					http.StatusInternalServerError)
 				return
 			}
-			return
 		} else if r.Method == http.MethodDelete {
 			err = ctx.UserStore.DeleteTournament(int64(tid))
 			if err != nil {

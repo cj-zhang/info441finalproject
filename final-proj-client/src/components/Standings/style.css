@@ -1,0 +1,16 @@
+#header {
+    width: 100%;
+    height: 30px;
+}
+#container {
+    margin: auto;
+}
+#first {
+    float: left;
+}
+#second {
+    float: left;
+}
+#clear {
+    clear: both;
+}

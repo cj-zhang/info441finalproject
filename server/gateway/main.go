@@ -10,6 +10,8 @@ import (
 	"info441finalproject/server/gateway/sessions"
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"time"
 
@@ -133,12 +135,29 @@ func main() {
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 
 	mux := http.NewServeMux()
-	// replace summary handler w proxy
-	// mux.Handle("/v1/channels/", msgProxy)
-	// mux.Handle("/v1/messages/", msgProxy)
-	// mux.Handle("/v1/summary", summaryProxy)
-
-	//mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
+	summaryProxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme: "http", Host: summaryAddr})
+	director := func(r *http.Request) {
+		//Check if authenticated
+		sessionState := new(handlers.SessionState)
+		sid, err := sessions.GetState(r, ctx.SigningKey, ctx.SessionStore, sessionState)
+		if sid != sessions.InvalidSessionID && err == nil {
+			user, err := json.Marshal(sessionState.User)
+			if err == nil {
+				r.Header.Del("X-User")
+				r.Header.Add("X-User", string(user)) // User is authenticated
+			}
+		}
+		r.Host = messagingAddr
+		r.URL.Host = messagingAddr
+		r.URL.Scheme = "http"
+	}
+	messagingProxy := &httputil.ReverseProxy{Director: director}
+	mux.HandleFunc("/v1/ws", ctx.WebSocketConnectionHandler)
+	mux.Handle("/v1/summary", summaryProxy)
+	mux.Handle("/v1/channels", messagingProxy)
+	mux.Handle("/v1/channels/", messagingProxy)
+	mux.Handle("/v1/channels/{channelID}/members", messagingProxy)
+	mux.Handle("/v1/messages/", messagingProxy)
 	mux.HandleFunc("/v1/users", ctx.UsersHandler)
 	mux.HandleFunc("/v1/users/", ctx.SpecificUserHandler)
 	mux.HandleFunc("/v1/sessions", ctx.SessionsHandler)

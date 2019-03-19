@@ -16,10 +16,13 @@ const deleteUser = "delete from users where id=?"
 const getAllTournaments = "Select * From tournaments"
 const getTournament = "Select * From tournaments Where id=?"
 const deleteTournament = "delete From tournaments Where id=?"
+const deleteTournamentGames = "delete from games where tournament_id=?"
+const deleteTournamentTOs = "delete from tournament_organizers where tournament_id=?"
+const deleteTournamentPlayers = "delete from players where tournament_id=?"
 const insertTournament = "insert into tournaments(website, tournament_location, tournament_organizer_id, photo_url, registration_open) values (?,?,?,?,?)"
 const updateTournament = "update tournaments set website=?, tournament_location=?, tournament_organizer_id=?, registration_open=?, photo_url=? where id=?"
 const insertPlayer = "insert into players(u_id, tournament_id) values (?,?)"
-const deletePlayer = "delete From tournaments Where u_id=? and tournament_id=?"
+const deletePlayer = "delete from players Where u_id=? and tournament_id=?"
 const getPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=? limit ?"
 const getAllPlayers = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join players p on u.id = p.u_id where p.tournament_id=?"
 const getTO = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.u_id=? and t.tournament_id=?"
@@ -27,7 +30,7 @@ const getTOs = "Select id, email, username, pass_hash, first_name, last_name, ph
 const getAllTOs = "Select id, email, username, pass_hash, first_name, last_name, photo_url From users u join tournament_organizers t on u.id = t.u_id where t.tournament_id=?"
 const insertTO = "insert into tournament_organizers(u_id, tournament_id, brackets_overseen) values (?,?,?)"
 const addOneBracketOverseenToTO = "update tournament_organizers set brackets_overseen = brackets_overseen + 1 where u_id=? and tournament_id=?"
-const deleteTO = "delete From tournaments_organizers Where u_id=? and tournament_id=?"
+const deleteTO = "delete From tournament_organizers Where u_id=? and tournament_id=?"
 const getLeastBusyTO = "select u_id from tournament_organizers where tournament_id=? order by brackets_overseen asc limit 1"
 const getGame = "Select * From games where id=?"
 const getGames = "Select * From games where tournament_id=? limit ?"
@@ -152,9 +155,21 @@ func (store *MySQLStore) GetTournament(id int64) (*Tournament, error) {
 	return t, nil
 }
 
-// DeleteTournament deletes the tournament with the given ID
+// DeleteTournament deletes the tournament and all its daa with the given ID
 func (store *MySQLStore) DeleteTournament(id int64) error {
-	_, err := store.Client.Exec(deleteTournament, id)
+	_, err := store.Client.Exec(deleteTournamentGames, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournamentPlayers, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournamentTOs, id)
+	if err != nil {
+		return err
+	}
+	_, err = store.Client.Exec(deleteTournament, id)
 	if err != nil {
 		return err
 	}

@@ -26,31 +26,31 @@ export default class SignUpView extends React.Component {
     //     this.authUnsub();
     // }
     handleSignUp(evt) {
+        var data = {
+            email: this.state.email,
+            password: this.state.password,
+            passwordConf: this.state.confirm,
+            userName: this.state.displayName,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+        }
         if (this.state.password !== this.state.confirm) {
             alert("Your passwords do not match");
         } 
         evt.preventDefault();
-        return fetch('http://smash.chenjosephzhang.me/v1/users', {
+        return fetch('https://smash.chenjosephzhang.me/v1/users', {
             method: "POST", 
             mode: "no-cors", // no-cors, cors, *same-origin
             credentials: "include", // include, *same-origin, omit
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json'
                 // "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: {
-                "email": this.state.email,
-                "password": this.state.password,
-                "passwordConf": this.state.confirm,
-                "userName": this.state.displayName,
-                "firstName": this.state.firstName,
-                "lastName": this.state.lastName,
-            }, // body data type must match "Content-Type" header
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
         })
-        .then(response => response.status())
         .then(function(response) {
             console.log(response);
-            if(response === 201) {
+            if(response.status === 201) {
                 // successfulAuth();
                 console.log("SUCCESSFUL");
             } else {

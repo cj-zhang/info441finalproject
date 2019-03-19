@@ -1,0 +1,8 @@
+{
+	"Email" :       "kevinx97@uw.edu",
+	"Password"   :  "summer",
+	"PasswordConf" :"summer",
+	"UserName"    : "kevinx97",
+	"FirstName"   : "Kevin",
+	"LastName"   :  "Xu"
+}

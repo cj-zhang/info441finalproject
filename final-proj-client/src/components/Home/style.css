@@ -21,6 +21,8 @@
     max-height: 500px !important;
   }
 
-/* .jumbotron {
-  background-image: "./img/smash_banner_background.png";
-} */
+.mainjumbotron {
+  height: 300px;
+  background-image: url("./img/smash_banner_background.png");
+  width: 100%;
+}

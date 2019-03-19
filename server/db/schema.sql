@@ -11,7 +11,7 @@ create table if not exists users (
 create table if not exists tournaments (
     id int not null auto_increment primary key,
     website varchar(2083),
-    tounament_location varchar(255) not null,
+    tournament_location varchar(255) not null,
     tournament_organizer_id int not null,
     registration_open boolean,
     photo_url varchar(2083) not null

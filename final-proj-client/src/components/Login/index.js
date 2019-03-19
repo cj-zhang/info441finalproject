@@ -3,15 +3,15 @@ import {Link} from "react-router-dom";
 
 
 export default class SignInView extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         errorMessage: undefined,
-    //         currentUser: undefined,
-    //         email: "",
-    //         password: ""
-    //     };
-    // }
+    constructor(props) {
+        super(props);
+        this.state = {
+            errorMessage: undefined,
+            currentUser: undefined,
+            email: "",
+            password: ""
+        };
+    }
     // componentDidMount() {
     //     this.authUnsub = firebase.auth().onAuthStateChanged(user => {
     //       this.setState({currentUser: user});
@@ -20,13 +20,42 @@ export default class SignInView extends React.Component {
     // componentWillUnmount() {
     //     this.authUnsub();
     // }
-    // handleSignIn(evt) {
-    //     evt.preventDefault();
-    //     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-    //         .then(() => this.props.history.push("/channels/General"))
-    //         .catch(err => alert(err.message));
+    // successfulAuth() {
+    //     // return Promise.resolve(this.props.history.push("/"))
+    //     console.log("successful signin");
     // }
-       
+    handleSignIn(evt) {
+        evt.preventDefault();
+        return fetch('http://smash.chenjosephzhang.me/v1/sessions', {
+            method: "POST", 
+            mode: "cors", // no-cors, cors, *same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "include", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "application/json",
+                // "Content-Type": "application/x-www-form-urlencoded",
+            },
+            redirect: "follow", // manual, *follow, error
+            referrer: "no-referrer", // no-referrer, *client
+            body: {
+                "Email": this.state.email,
+                "Password": this.state.password
+            }, // body data type must match "Content-Type" header
+        })
+        .then(response => response.status())
+        .then(function(response) {
+            if(response === 201) {
+                // successfulAuth();
+                console.log("SUCCESSFUL");
+            } else {
+                alert("Unsuccessful log in attempt");
+            }
+        })
+        .catch(function(error) {
+            console.log('There has been a problem with your fetch operation: ', error.message);
+        });
+    }    
+
     render() {    
         let signinStyle = {
             width: "30%",
@@ -53,16 +82,18 @@ export default class SignInView extends React.Component {
                 <div className="container">
                 <h1 style={titleStyle}>Sign In</h1>
 
-                <form>
+                <form onSubmit={evt => this.handleSignIn(evt)}>
                     <div className="form-group">
                         <h4 style={labelStyle}>Email:</h4>
                         <input id="email" type="email" className="form-control" 
-                        placeholder="enter your email address"/>
+                        placeholder="enter your email address"
+                        onInput={evt => this.setState({email: evt.target.value})}/>
                     </div>
                     <div className="form-group">
                         <h4 style={labelStyle}>Password:</h4>
                         <input id="password" type="password" className="form-control"
-                        placeholder="enter your password" />
+                        placeholder="enter your password"
+                        onInput={evt => this.setState({password: evt.target.value})}/>
                     </div>
                     <div className="last-row d-flex">
                         <div className="form-group">

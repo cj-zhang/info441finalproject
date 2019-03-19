@@ -52,7 +52,3 @@ type GameUpdate struct {
 	Completed  bool   `json:"completed"`
 	Result     string `json:"result"`
 }
-
-// *TODO*
-// Create standings struct
-// Create standings update struct

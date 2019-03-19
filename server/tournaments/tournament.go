@@ -3,15 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 
 	"info441finalproject/server/gateway/models"
-)
 
-//*TODO* Create stnadings whenever games are created and update standings whenver games finished
+	"github.com/streadway/amqp"
+)
 
 // GetTournamentIDFromURL retrieves the tournament id variable
 // from the url. Variable must be at base of url
@@ -539,6 +540,29 @@ func (ctx *TournamentContext) GamesHandler(w http.ResponseWriter, r *http.Reques
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			var queueMessage map[string]interface{}
+			queueMessage["type"] = "matched-created"
+			queueMessage["message"] = message
+			queueMessage["userIDs"] = game.Victor
+			queueBody, err := json.Marshal(queueMessage)
+			if err != nil {
+				http.Error(w, "Error publishing to queue", http.StatusInternalServerError)
+				return
+			}
+			err = ctx.RabbitChannel.Publish(
+				"",            // exchange
+				ctx.QueueName, // routing key
+				false,         // mandatory
+				false,         // immediate
+				amqp.Publishing{
+					ContentType: "application/json",
+					Body:        []byte(queueBody),
+				})
+			if err != nil {
+				http.Error(w, "Error publishing to queue", http.StatusInternalServerError)
+				return
+			}
+			log.Printf(" [x] Sent %s", body)
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
